@@ -1,0 +1,20 @@
+﻿@page
+@model FluxoCaixaDiario.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bem-vindo ao App de Fluxo de Caixa Opah</h1>
+    <p>Este projeto foi criado somente para ilustrar a interação com os microserviços de Lançamentos e Saldo Diário</p>
+
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <p>Você está logado como <strong>@User.Identity.Name</strong>.</p>
+        <p>Use os links acima para Registrar Transações ou Consultar o Saldo Diário.</p>
+    }
+    else
+    {
+        <p>Por favor, <a asp-page="/Login">faça login</a> para começar.</p>
+    }
+</div>

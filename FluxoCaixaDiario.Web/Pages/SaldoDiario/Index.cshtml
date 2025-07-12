@@ -1,0 +1,38 @@
+﻿@page
+@model FluxoCaixaDiario.Web.Pages.SaldoDiario.IndexModel
+@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize] *@
+@{
+    ViewData["Title"] = "Saldo Diário Consolidado";
+}
+
+<h1>Saldo Diário Consolidado</h1>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info">@Model.Message</div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="QueryDate"></label>
+        <input asp-for="QueryDate" type="date" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Consultar Saldo</button>
+</form>
+
+@if (Model.DailyBalance != null && Model.DailyBalance.Balance.HasValue)
+{
+    <h2 class="mt-4">Saldo para @Model.DailyBalance.Date.ToShortDateString():</h2>
+    <p><strong>R$ @Model.DailyBalance.Balance.Value.ToString("N2")</strong></p>
+}
+else if (Model.DailyBalance == null && string.IsNullOrEmpty(Model.Message))
+{
+    <p class="mt-4">Selecione uma data para consultar o saldo.</p>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

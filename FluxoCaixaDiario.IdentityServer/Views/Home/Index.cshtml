@@ -1,0 +1,18 @@
+@using System.Reflection
+
+@{
+    var version = typeof(Duende.IdentityServer.Hosting.IdentityServerMiddleware).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+').First();
+}
+
+<div class="welcome-page">
+    <h2>
+         &nbsp;<img src="~/opah_favicon.png" class="logo">
+         Bem vindo a Opah Authentication <small class="text-muted">(com Identity Server @version)</small>
+    </h2>
+
+    <ul>        
+        <li>
+            Clique <a href="~/diagnostics">aqui</a> para ver os detalhes da sua sessão atual.
+        </li>
+    </ul>
+</div>

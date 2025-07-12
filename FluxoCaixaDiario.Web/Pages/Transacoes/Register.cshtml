@@ -1,0 +1,41 @@
+﻿@page
+@model FluxoCaixaDiario.Web.Pages.Transacoes.RegisterModel
+@using Microsoft.AspNetCore.Authorization
+@* @attribute [Authorize] *@
+@{
+    ViewData["Title"] = "Registrar Transação";
+}
+
+<h1>Registrar Nova Transação</h1>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info">@Model.Message</div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Transaction.Amount"></label>
+        <input asp-for="Transaction.Amount" class="form-control" />
+        <span asp-validation-for="Transaction.Amount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Transaction.Type"></label>
+        <select asp-for="Transaction.Type" class="form-control">
+            <option value="">Selecione o Tipo</option>
+            <option value="Credit">Crédito</option>
+            <option value="Debit">Débito</option>
+        </select>
+        <span asp-validation-for="Transaction.Type" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Transaction.Description"></label>
+        <input asp-for="Transaction.Description" class="form-control" />
+        <span asp-validation-for="Transaction.Description" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Registrar</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
