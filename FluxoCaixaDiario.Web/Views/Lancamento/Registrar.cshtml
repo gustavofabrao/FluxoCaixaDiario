@@ -1,6 +1,7 @@
 @model FluxoCaixaDiario.Web.Models.LancamentoInputModel
 @{
     ViewData["Title"] = "Registrar Lançamento";
+    var dataRegistro = ViewBag.DataRegistro as DateTime? ?? DateTime.Today;
 }
 <h2>@ViewData["Title"]</h2>
 @if (ViewBag.Message != null)
@@ -28,7 +29,7 @@
     </div>
     <div class="mb-3">
         <label asp-for="Data" class="form-label"></label>
-        <input asp-for="Data" type="date" class="form-control"/>
+        <input asp-for="Data" type="date" class="form-control" value="@dataRegistro.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="Data" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Registrar</button>

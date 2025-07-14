@@ -29,7 +29,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Controllers
                 return Ok(result);
             }
 
-            return NotFound($"Não foi encontrado saldo diário  para a data: {date.ToShortDateString()}");
+            return NotFound($"Não foi encontrado saldo diário para a data: {date.ToShortDateString()}");
         }
     }
 }

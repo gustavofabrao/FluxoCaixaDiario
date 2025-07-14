@@ -1,7 +1,9 @@
 using FluxoCaixaDiario.Web.Models;
 using FluxoCaixaDiario.Web.Services.IServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -27,6 +29,14 @@ namespace FluxoCaixaDiario.Web.Services
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<SaldoDiarioResult>();
+            }
+            else if (response.StatusCode.Equals(HttpStatusCode.NotFound))
+            {
+                return new SaldoDiarioResult() { DailyBalanceMessage = $"Não foi encontrado saldo diário para a data: {date.ToShortDateString()}" };
+            }
+            else if (response.StatusCode.Equals(HttpStatusCode.Unauthorized))
+            {
+                throw new UnauthorizedAccessException("Acesso não autorizado. Verifique suas credenciais.");
             }
 
             return null;

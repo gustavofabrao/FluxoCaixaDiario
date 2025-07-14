@@ -2,7 +2,9 @@ using FluxoCaixaDiario.Web.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 [Authorize]
 public class LancamentoController : Controller
@@ -17,6 +19,7 @@ public class LancamentoController : Controller
     [HttpGet]
     public IActionResult Registrar()
     {
+        ViewBag.DataRegistro = DateTime.Today;
         return View();
     }
 
@@ -29,6 +32,7 @@ public class LancamentoController : Controller
         var sucesso = await _lancamentoService.RegistrarLancamentoAsync(model, token);
 
         ViewBag.Message = sucesso ? "Lançamento registrado com sucesso!" : "Erro ao registrar lançamento";
+        ModelState.Clear();
         return View();
     }
 }

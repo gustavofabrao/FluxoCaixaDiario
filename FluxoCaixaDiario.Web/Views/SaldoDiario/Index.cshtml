@@ -17,3 +17,9 @@
         - <strong>@(Model.Balance.Value >= 0 ? "Saldo Positivo" : "Saldo Negativo")</strong><br />
     </div>
 }
+else
+{
+    <div class="alert alert-warning">
+        @Model.DailyBalanceMessage
+    </div>
+}
