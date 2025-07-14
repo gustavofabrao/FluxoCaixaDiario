@@ -35,7 +35,6 @@ namespace FluxoCaixaDiario.Lancamentos.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 

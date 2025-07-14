@@ -1,0 +1,19 @@
+@model FluxoCaixaDiario.Web.Models.SaldoDiarioResult
+@{
+    ViewData["Title"] = "Saldo Diário";
+    var consulta = ViewBag.Consulta as DateTime? ?? DateTime.Today;
+}
+<h2>@ViewData["Title"]</h2>
+<form method="get" class="mb-3">
+    <input type="date" name="date" class="form-control" value="@consulta.ToString("yyyy-MM-dd")" />
+    <button type="submit" class="btn btn-primary mt-2">Consultar</button>
+</form>
+@if (Model != null && Model.Balance.HasValue)
+{
+    <div class="alert alert-success">
+        Total de Créditos: <strong>R$ @Model.TotalCredit.Value.ToString("N2")</strong><br />
+        Total de Débitos: <strong>R$ @Model.TotalDebit.Value.ToString("N2")</strong><br />
+        Saldo de: <strong>R$ @Model.Balance.Value.ToString("N2")</strong>
+        - <strong>@(Model.Balance.Value >= 0 ? "Saldo Positivo" : "Saldo Negativo")</strong><br />
+    </div>
+}

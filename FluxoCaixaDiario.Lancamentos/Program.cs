@@ -27,7 +27,7 @@ builder.Services.AddDbContext<MySQLContext>(options =>
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddMediatR(cfg => cfg.AsScoped());
 
 // Pipeline de validação
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -121,6 +121,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers().RequireAuthorization("ApiScope");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

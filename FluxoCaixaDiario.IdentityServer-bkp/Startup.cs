@@ -1,4 +1,5 @@
 using Duende.IdentityServer.Services;
+using FluxoCaixaDiario.IdentityServer.Controllers.MainModule;
 using FluxoCaixaDiario.IdentityServer.Domain.Entities;
 using FluxoCaixaDiario.IdentityServer.Infra.Configuration;
 using FluxoCaixaDiario.IdentityServer.Infra.Data.Context;
@@ -45,16 +46,15 @@ namespace FluxoCaixaDiario.IdentityServer
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
                     options.EmitStaticAudienceClaim = true;
-                }).AddInMemoryIdentityResources(
-                        IdentityConfiguration.IdentityResources)
-                    .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)    
+                }).AddInMemoryIdentityResources(IdentityConfiguration.IdentityResources)
+                    .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)
                     .AddInMemoryClients(IdentityConfiguration.Clients)
-                    .AddAspNetIdentity<ApplicationUser>();
+                    .AddAspNetIdentity<ApplicationUser>()
+                    .AddTestUsers(TestUsers.Users)
+                    .AddDeveloperSigningCredential();
 
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IProfileService, ProfileService>();
-
-            builder.AddDeveloperSigningCredential();
 
             services.AddControllersWithViews();
         }

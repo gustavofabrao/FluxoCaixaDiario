@@ -34,7 +34,7 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro de conexão com o RabbitMQ");
-                throw; // Relança a exceção para falhar o startup se a conexão for crítica
+                throw;
             }
         }
 
@@ -42,13 +42,9 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
         {
             try
             {
-                // Declara a exchange (garante que ela exista). durable: true persiste a exchange
-                // type: ExchangeType.Topic permite roteamento flexível com wildcards
                 _channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true);
 
                 var body = JsonSerializer.SerializeToUtf8Bytes(message);
-
-                // Fix: Replace the missing CreateBasicProperties method with an alternative approach
                 var properties = new BasicProperties
                 {
                     Persistent = true // Mensagem fica persistente no disco

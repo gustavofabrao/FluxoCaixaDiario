@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace FluxoCaixaDiario.Lancamentos.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("api/transacoes")]
+    [Route("api/v1/transacoes")]
     public class TransactionsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,6 +18,7 @@ namespace FluxoCaixaDiario.Lancamentos.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> RegisterTransaction([FromBody] RegisterTransactionCommand command)
         {
             if (!ModelState.IsValid)

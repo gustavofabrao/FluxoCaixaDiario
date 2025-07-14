@@ -52,3 +52,10 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+/.vs
+/.vs/FluxoCaixaDiario/v17
+/.vs/FluxoCaixaDiario/v17/.wsuo
+/.vs/FluxoCaixaDiario/v17/DocumentLayout.json
+/.vs/VSWorkspaceState.json
+/FluxoCaixaDiario.slnLaunch.user
+/FluxoCaixaDiario.slnLaunch.user

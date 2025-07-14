@@ -53,31 +53,26 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
                 _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
                 _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
-                // Declara a exchange
                 _channel.ExchangeDeclareAsync(exchange: _exchangeName, type: ExchangeType.Topic, durable: true);
 
-                // Declara a fila (durable: true persiste a fila no broker)
                 _channel.QueueDeclareAsync(queue: _queueName,
                                      durable: true,
                                      exclusive: false, // Pode ser acessada por múltiplos consumidores
                                      autoDelete: false, // Não é excluída quando não há consumidores
                                      arguments: null);
 
-                // Vincula a fila à exchange com a routing key
                 _channel.QueueBindAsync(queue: _queueName,
                                    exchange: _exchangeName,
                                    routingKey: _routingKey);
 
-                // Define o QoS (Quality of Service) para limitar o número de mensagens não confirmadas
-                // que um consumidor recebe de uma vez. Ajuda a evitar sobrecarga.
+                // Define o Quality of Service para limitar o número de mensagens não confirmadas que um consumidor recebe de uma vez (Ajuda a evitar sobrecarga)
                 _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 5, global: false); // Prefetch de 5 mensagens
 
-                _logger.LogInformation("RabbitMQ Consumer: Conectado, exchange e fila configuradas.");
+                _logger.LogInformation("RabbitMQ Consumer: Conectado, exchange e fila configuradas");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "RabbitMQ Consumer: Erro ao inicializar RabbitMQ.");
-                // Poderia adicionar lógica de retry aqui para tentar reconectar
+                _logger.LogError(ex, "RabbitMQ Consumer: Erro ao inicializar RabbitMQ");
                 throw;
             }
         }
@@ -87,10 +82,10 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
         {
             stoppingToken.ThrowIfCancellationRequested();
 
-            // Permite que o método Received logo abaixo seja assíncrono, liberando o thread do Consumer enquanto operações de entrada e saída estão em andamento.
+            // Método Received  abaixo seja assíncrono, liberando o thread do Consumer enquanto operações de entrada e saída estão em andamento
             var consumer = new AsyncEventingBasicConsumer(_channel); 
 
-            _logger.LogInformation("RabbitMQ Consumer: Iniciando o consumo de mensagens da fila '{QueueName}'.", _queueName);
+            _logger.LogInformation("RabbitMQ Consumer: Iniciando o consumo de mensagens da fila '{QueueName}'", _queueName);
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
@@ -103,8 +98,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
 
                     if (transactionEvent != null)
                     {
-                        // Cria um escopo para o serviço para que as dependências sejam resolvidas corretamente
-                        // para cada mensagem processada. Essencial em BackgroundService.
+                        // Cria um escopo para o serviço para cada mensagem processada. Essencial em BackgroundService
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -114,31 +108,29 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
                                 transactionEvent.Amount,
                                 transactionEvent.Type
                             );
-                            await mediator.Send(command, stoppingToken); // Passa o CancellationToken
+                            await mediator.Send(command, stoppingToken);
                         }
                     }
 
                     // Confirma que a mensagem foi processada com sucesso
                     await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-                    _logger.LogInformation("RabbitMQ Consumer: Mensagem com Delivery Tag {DeliveryTag} processada e ACK enviado.", ea.DeliveryTag);
+                    _logger.LogInformation("RabbitMQ Consumer: Mensagem com Delivery Tag {DeliveryTag} processada e ACK enviado", ea.DeliveryTag);
                 }
                 catch (JsonException jsonEx)
                 {
                     _logger.LogError(jsonEx, "RabbitMQ Consumer: Erro de desserialização JSON para mensagem com Delivery Tag {DeliveryTag}. Mensagem: {Message}", ea.DeliveryTag, message);
-                    // Não re-enfileira mensagem com JSON inválido para evitar loop infinito
+                    // Não re-enfileira mensagem com JSON inválido para evitar loop indesejado e infinito
                     await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "RabbitMQ Consumer: Erro ao processar mensagem com Delivery Tag {DeliveryTag}. Mensagem: {Message}", ea.DeliveryTag, message);
-                    // Rejeita a mensagem e a re-enfileira para que possa ser reprocessada.
-                    // Considere um limite de retries ou uma Dead Letter Queue (DLQ) para mensagens problemáticas.
+                    // Rejeita a mensagem e a re-enfileira para que possa ser reprocessada
                     await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true);
                 }
             };
-
-            // Inicia o consumo da fila
-            _channel.BasicConsumeAsync(queue: _queueName, autoAck: false, consumer: consumer); // autoAck: false é crucial para controle manual
+            
+            _channel.BasicConsumeAsync(queue: _queueName, autoAck: false, consumer: consumer); // autoAck: false controle manual
 
             _logger.LogInformation("RabbitMQ Consumer: Consumo iniciado na fila '{QueueName}'.", _queueName);
 
@@ -147,7 +139,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
 
         public override void Dispose()
         {
-            _logger.LogInformation("RabbitMQ Consumer: Desligando...");
+            _logger.LogInformation("RabbitMQ Consumer: Desligando");
             try
             {
                 _channel?.CloseAsync();
@@ -155,7 +147,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "RabbitMQ Consumer: Erro ao fechar conexão ou canal do RabbitMQ.");
+                _logger.LogError(ex, "RabbitMQ Consumer: Erro ao fechar conexão ou canal do RabbitMQ");
             }
             base.Dispose();
             GC.SuppressFinalize(this);

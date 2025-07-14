@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "HiperShopping.ProductAPI": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:4440;http://localhost:4441"
+    }
+  }
+}

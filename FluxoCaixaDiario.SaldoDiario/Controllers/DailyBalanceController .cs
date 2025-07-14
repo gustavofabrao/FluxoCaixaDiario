@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 namespace FluxoCaixaDiario.SaldoDiario.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("api/saldo-diario")]
+    [Route("api/v1/saldo-diario")]
     public class DailyBalanceController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,13 +19,14 @@ namespace FluxoCaixaDiario.SaldoDiario.Controllers
         }
 
         [HttpGet("{date}")]
+        [Authorize]
         public async Task<IActionResult> GetDailyBalance(DateTime date)
         {
             var result = await _mediator.Send(new GetDailyBalanceQuery(date));
 
             if (result.Balance.HasValue)
             {
-                return Ok(new { result.Date, Balance = result.Balance.Value });
+                return Ok(result);
             }
 
             return NotFound($"Não foi encontrado saldo diário  para a data: {date.ToShortDateString()}");

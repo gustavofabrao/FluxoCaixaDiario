@@ -39,7 +39,7 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Configuration
                 new Client
                 {
                     ClientId = "fluxocaixadiario.web",
-                    //ClientSecrets = { new Secret("my_super_secret".Sha256())},
+                    ClientSecrets = { new Secret("my_super_secret".Sha256())},
                     ClientName = "Fluxo de Caixa Diário - Web",
                     AllowedGrantTypes = GrantTypes.Code,
                     RequireClientSecret = false,
@@ -55,12 +55,12 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Configuration
                     },
                     RequirePkce = true,
                     AllowOfflineAccess = true, 
-                    AccessTokenLifetime = 3600 // 1 hora de validade do token de acesso
+                    AccessTokenLifetime = 3600 // 1 hora de validade do token
                 },
                 new Client
                 {
                     ClientId = "fluxocaixadiario.client",
-                    //ClientSecrets = { new Secret("my_super_secret".Sha256())},
+                    ClientSecrets = { new Secret("my_super_secret".Sha256())},
                     ClientName = "Fluxo de Caixa Diário - Client",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = {"read", "write", "profile",

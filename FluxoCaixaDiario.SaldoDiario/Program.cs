@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,17 +24,36 @@ builder.Services.AddDbContext<MySQLContext>(options =>
         b => b.MigrationsAssembly(typeof(MySQLContext).Assembly.FullName)));
 
 builder.Services.AddScoped<IDailyBalanceRepository, DailyBalanceRepository>();
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
+builder.Services.AddMediatR(cfg => cfg.AsScoped());
 builder.Services.AddHostedService<RabbitMqConsumerService>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
         options.Authority = builder.Configuration["Auth:Authority"];
+        options.Audience = builder.Configuration["Auth:Audience"];
+        options.RequireHttpsMetadata = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false
+            ValidateAudience = false, // Garante que o 'aud' do token corresponde ao 'options.Audience'
+            ValidateIssuer = true,   // Garante que o 'iss' do token corresponde ao 'options.Authority'
+            ValidateLifetime = true, // Garante que o token não expirou
+            ValidateIssuerSigningKey = true // Garante que a assinatura do token é válida usando as chaves do Authority
+        };
+
+        // Opcional, para depuração mais detalhada
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"************ Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token successfully validated!!!!!!!!!!!!!!!!!!");
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -114,6 +134,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers().RequireAuthorization("ApiScope");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

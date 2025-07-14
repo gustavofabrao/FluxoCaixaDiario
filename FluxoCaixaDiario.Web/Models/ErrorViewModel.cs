@@ -1,3 +1,5 @@
+using System;
+
 namespace FluxoCaixaDiario.Web.Models
 {
     public class ErrorViewModel

@@ -19,7 +19,7 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Configuration
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             { 
-                new ApiScope("geek_shopping", "FluxoCaixaDiario Server"),
+                new ApiScope("fluxocaixadiario.web", "FluxoCaixaDiario Server"),
                 new ApiScope(name: "read", "Read data."),
                 new ApiScope(name: "write", "Write data."),
                 new ApiScope(name: "delete", "Delete data."),
@@ -37,7 +37,7 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Configuration
                 },
                 new Client
                 {
-                    ClientId = "geek_shopping",
+                    ClientId = "fluxocaixadiario.web",
                     ClientSecrets = { new Secret("my_super_secret".Sha256())},
                     AllowedGrantTypes = GrantTypes.Code,
                     RedirectUris = {"https://localhost:4430/signin-oidc"},
@@ -47,7 +47,7 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Configuration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "geek_shopping"
+                        "fluxocaixadiario.web"
                     }
                 }
             };

@@ -17,7 +17,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Application.Queries
         public async Task<GetDailyBalanceResult> Handle(GetDailyBalanceQuery request, CancellationToken cancellationToken)
         {
             var dailyBalance = await _dailyBalanceRepository.GetByDateAsync(request.Date.Date);
-            return new GetDailyBalanceResult(request.Date.Date, dailyBalance?.Balance);
+            return new GetDailyBalanceResult(request.Date.Date, dailyBalance?.TotalDebit, dailyBalance?.TotalCredit, dailyBalance?.Balance);
         }
     }
 }

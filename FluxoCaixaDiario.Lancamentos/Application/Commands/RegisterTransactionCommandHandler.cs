@@ -3,6 +3,7 @@ using FluxoCaixaDiario.Domain.Events;
 using FluxoCaixaDiario.Domain.Repositories;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +14,15 @@ namespace FluxoCaixaDiario.Lancamentos.Application.Commands
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IRabbitMqPublisher _messagePublisher;
+        private readonly IConfiguration _configuration;
 
-        public RegisterTransactionCommandHandler(ITransactionRepository transactionRepository, IRabbitMqPublisher messagePublisher)
+        public RegisterTransactionCommandHandler(ITransactionRepository transactionRepository, 
+            IRabbitMqPublisher messagePublisher,
+            IConfiguration configuration)
         {
             _transactionRepository = transactionRepository;
             _messagePublisher = messagePublisher;
+            _configuration = configuration;
         }
 
         public async Task<Guid> Handle(RegisterTransactionCommand request, CancellationToken cancellationToken)
@@ -25,10 +30,10 @@ namespace FluxoCaixaDiario.Lancamentos.Application.Commands
             var transaction = new Transaction
             {
                 Id = Guid.NewGuid(),
-                Amount = request.Amount,
-                Type = request.Type,
-                Date = DateTime.UtcNow,
-                Description = request.Description
+                Amount = request.Valor,
+                Type = request.Tipo,
+                Date = request.Data,
+                Description = request.Descricao
             };
 
             await _transactionRepository.AddAsync(transaction);
@@ -41,7 +46,7 @@ namespace FluxoCaixaDiario.Lancamentos.Application.Commands
                 Type = transaction.Type
             };
 
-            await _messagePublisher.PublishAsync("transaction_events", "transaction_registered", transactionRegisteredEvent);
+            await _messagePublisher.PublishAsync(_configuration["RabbitMQ:ExchangeName"], _configuration["RabbitMQ:RoutingKey"], transactionRegisteredEvent);
 
             return transaction.Id;
         }

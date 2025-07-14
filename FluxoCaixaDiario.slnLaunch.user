@@ -3,11 +3,7 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Path": "FluxoCaixaDiario.IdentityServer\\FluxoCaixaDiario.IdentityServer.csproj",
-        "Action": "Start"
-      },
-      {
-        "Path": "FluxoCaixaDiario.Web\\FluxoCaixaDiario.Web.csproj",
+        "Path": "FluxoCaixaDiario.IdentityServer-bkp\\FluxoCaixaDiario.IdentityServer.csproj",
         "Action": "Start"
       },
       {
@@ -16,6 +12,10 @@
       },
       {
         "Path": "FluxoCaixaDiario.SaldoDiario\\FluxoCaixaDiario.SaldoDiario.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "FluxoCaixaDiario.Web\\FluxoCaixaDiario.Web.csproj",
         "Action": "Start"
       }
     ]

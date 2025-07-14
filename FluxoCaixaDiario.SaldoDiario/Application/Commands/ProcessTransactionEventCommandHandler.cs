@@ -16,7 +16,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Application.Commands
             _dailyBalanceRepository = dailyBalanceRepository;
         }
 
-        public async Task Handle(ProcessTransactionEventCommand request, CancellationToken cancellationToken)
+        async Task<Unit> IRequestHandler<ProcessTransactionEventCommand, Unit>.Handle(ProcessTransactionEventCommand request, CancellationToken cancellationToken)
         {
             var date = request.TransactionDate.Date;
             var dailyBalance = await _dailyBalanceRepository.GetByDateAsync(date);
@@ -44,6 +44,8 @@ namespace FluxoCaixaDiario.SaldoDiario.Application.Commands
             dailyBalance.Balance = dailyBalance.TotalCredit - dailyBalance.TotalDebit;
 
             await _dailyBalanceRepository.UpsertAsync(dailyBalance);
+
+            return Unit.Value;
         }
     }
 }
