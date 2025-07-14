@@ -1,5 +1,7 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using FluxoCaixaDiario.Domain.Repositories;
+using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Application.Common;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
@@ -31,7 +33,14 @@ builder.Services.AddMediatR(cfg => cfg.AsScoped());
 
 // Pipeline de validação
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+// Registrando os comandos e handlers
+//builder.Services.AddScoped<IRequestHandler<RegisterTransactionCommand, Guid>, RegisterTransactionCommandHandler>();
+// Registrando os validadores 
+//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommandValidator>());
+//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommand>());
+//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommandHandler>());
 
+//builder.Services.AddValidatorsFromAssembly(typeof(RegisterTransactionCommandValidator).Assembly);
 builder.Services.AddValidatorsFromAssemblyContaining<Program>(); ////////
 
 builder.Services.AddAuthentication("Bearer")
@@ -54,7 +63,10 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+});
 builder.Services.AddEndpointsApiExplorer();
 
 // Configura o Swagger/OpenAPI

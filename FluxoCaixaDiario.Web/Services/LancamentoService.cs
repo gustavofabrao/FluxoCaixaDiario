@@ -1,9 +1,11 @@
+using FluxoCaixaDiario.Web.Models;
+using FluxoCaixaDiario.Web.Utils;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using FluxoCaixaDiario.Web.Models;
 
 public class LancamentoService : ILancamentoService
 {
@@ -20,6 +22,13 @@ public class LancamentoService : ILancamentoService
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var response = await _client.PostAsJsonAsync(BasePath, model);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = await response.ReadContentAs<ValidationErrorViewModel>();
+            throw new HttpRequestException(errorMessage.GetFormattedErrors());
+        }
+
         return response.IsSuccessStatusCode;
     }
 }

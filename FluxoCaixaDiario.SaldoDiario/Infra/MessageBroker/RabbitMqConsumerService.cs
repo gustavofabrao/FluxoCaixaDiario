@@ -102,12 +102,12 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                            var command = new ProcessTransactionEventCommand(
-                                transactionEvent.TransactionId,
-                                transactionEvent.TransactionDate,
-                                transactionEvent.Amount,
-                                transactionEvent.Type
-                            );
+                            var command = new ProcessTransactionEventCommand() {
+                                TransactionId = transactionEvent.TransactionId,
+                                TransactionDate = transactionEvent.TransactionDate,
+                                Amount = transactionEvent.Amount,
+                                Type = transactionEvent.Type 
+                            };
                             await mediator.Send(command, stoppingToken);
                         }
                     }

@@ -4,5 +4,11 @@ using System;
 
 namespace FluxoCaixaDiario.Lancamentos.Application.Commands
 {
-    public record RegisterTransactionCommand(TransactionTypeEnum Tipo, decimal Valor, string Descricao, DateTime Data) : IRequest<Guid>;
+    public record RegisterTransactionCommand : IRequest<Guid>
+    {
+        public DateTime Data { get; set; }
+        public string Descricao { get; set; }
+        public decimal Valor { get; set; }
+        public TransactionTypeEnum Tipo { get; set; }
+    }
 }
