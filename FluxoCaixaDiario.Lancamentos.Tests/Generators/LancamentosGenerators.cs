@@ -11,7 +11,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Generators
         public static Faker<RegisterTransactionCommand> CreateRegisterTransactionCommand()
         {
             return new Faker<RegisterTransactionCommand>()
-                .RuleFor(c => c.Data, f => f.Date.Past(1))
+                .RuleFor(c => c.Data, f => f.Date.Past(1).Date)
                 .RuleFor(c => c.Descricao, f => f.Name.FullName())
                 .RuleFor(c => c.Valor, f => f.Finance.Amount(min: 1, max: 1000))
                 .RuleFor(c => c.Tipo, f => f.PickRandom(0, 1));
@@ -21,7 +21,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Generators
         {
             return new Faker<Transaction>()
                 .RuleFor(l => l.Id, f => f.Random.Guid())
-                .RuleFor(l => l.Date, f => f.Date.Past(1))
+                .RuleFor(l => l.Date, f => f.Date.Past(1).Date)
                 .RuleFor(l => l.Description, f => f.Name.FullName())
                 .RuleFor(l => l.Amount, f => f.Finance.Amount(min: 1, max: 1000))
                 .RuleFor(l => l.Type, f => f.PickRandom(TransactionTypeEnum.Credit, TransactionTypeEnum.Debit));
@@ -33,7 +33,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Generators
                 .RuleFor(m => m.TransactionId, f => f.Random.Guid())
                 .RuleFor(m => m.EventType, f => f.PickRandom("transacao_registrada"))
                 .RuleFor(m => m.Payload, f => new {
-                    Date = f.Date.Past(1),
+                    Date = f.Date.Past(1).Date,
                     Description = f.Name.FullName(),
                     Amount = f.Finance.Amount(min: 1, max: 1000),
                     Type = f.PickRandom(0, 1)

@@ -57,11 +57,11 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Infra.MessageBroker
         }
 
         [Fact]
-        public void Constructor_ShouldLogErrorAndThrow_WhenConnectionFails()
+        public void Construtor_DeveLogarErroEArremessarExceção_QuandoFalharConexão()
         {
             // Arrange 
             _mockConnectionFactory.Setup(f => f.CreateConnectionAsync(It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new Exception("Simulated connection error."));
+                .ThrowsAsync(new Exception("Erro de conexão simulada"));
 
             // Act + Asserts
             Assert.Throws<Exception>(() =>
@@ -81,7 +81,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Infra.MessageBroker
 
 
         [Fact]
-        public async Task PublishAsync_ShouldDeclareExchangeAndPublishMessage()
+        public async Task PublishAsync_DevePublicarMensagemComSucessoEPublicarMensagem()
         {
             // Arrange
             var exchangeName = "test_exchange";
@@ -126,7 +126,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Infra.MessageBroker
 
 
         [Fact]
-        public async Task PublishAsync_ShouldLogErrorAndNack_WhenPublishingFails()
+        public async Task PublishAsync_DeveLogarErroERejeitarMensagemQuandoFalharPublicação()
         {
             // Arrange
             var exchangeName = "test_exchange";
@@ -148,7 +148,7 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Infra.MessageBroker
                     LogLevel.Error,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Erro ao publicar mensagem no RabbitMQ.")),
-                    It.IsAny<Exception>(), // Verifica que qualquer exceção foi logada
+                    It.IsAny<Exception>(),
                     (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
 
