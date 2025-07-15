@@ -1,4 +1,5 @@
 ﻿using FluxoCaixaDiario.Domain.Entities;
+using FluxoCaixaDiario.Domain.Enums;
 using FluxoCaixaDiario.Domain.Events;
 using FluxoCaixaDiario.Domain.Repositories;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
@@ -31,8 +32,8 @@ namespace FluxoCaixaDiario.Lancamentos.Application.Commands
             {
                 Id = Guid.NewGuid(),
                 Amount = request.Valor,
-                Type = request.Tipo,
-                Date = request.Data,
+                Type = (TransactionTypeEnum)request.Tipo.Value,
+                Date = request.Data.Value,
                 Description = request.Descricao
             };
 

@@ -1,21 +1,20 @@
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using FluxoCaixaDiario.Domain.Repositories;
-using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Application.Common;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 
@@ -28,20 +27,25 @@ builder.Services.AddDbContext<MySQLContext>(options =>
         b => b.MigrationsAssembly(typeof(MySQLContext).Assembly.FullName)));
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+builder.Services.AddSingleton<IConnectionFactory>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    return new ConnectionFactory
+    {
+        HostName = builder.Configuration["RabbitMQ:HostName"],
+        UserName = builder.Configuration["RabbitMQ:UserName"],
+        Password = builder.Configuration["RabbitMQ:Password"],
+        Port = int.Parse(builder.Configuration["RabbitMQ:Port"])
+    };
+});
 builder.Services.AddSingleton<IRabbitMqPublisher, RabbitMqPublisher>();
 builder.Services.AddMediatR(cfg => cfg.AsScoped());
 
 // Pipeline de validação
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-// Registrando os comandos e handlers
-//builder.Services.AddScoped<IRequestHandler<RegisterTransactionCommand, Guid>, RegisterTransactionCommandHandler>();
-// Registrando os validadores 
-//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommandValidator>());
-//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommand>());
-//builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<RegisterTransactionCommandHandler>());
 
-//builder.Services.AddValidatorsFromAssembly(typeof(RegisterTransactionCommandValidator).Assembly);
-builder.Services.AddValidatorsFromAssemblyContaining<Program>(); ////////
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>

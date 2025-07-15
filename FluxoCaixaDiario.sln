@@ -7,9 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Application", "1 - Appl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Services", "2 - Services", "{BE8F341D-1378-4B40-88F9-6901B74F17C3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 - Tests", "5 - Tests", "{C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Test", "FluxoCaixaDiario.Test\FluxoCaixaDiario.Test.csproj", "{86E431A2-37C9-78DE-4010-39872BF3C46A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Tests", "4 - Tests", "{C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Domain", "3 - Domain", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -23,16 +21,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Web", "Flu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.IdentityServer", "FluxoCaixaDiario.IdentityServer-bkp\FluxoCaixaDiario.IdentityServer.csproj", "{8B8629CE-7365-C2F6-1674-087C4A3CF090}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Lancamentos.Tests", "FluxoCaixaDiario.Lancamentos.Tests\FluxoCaixaDiario.Lancamentos.Tests.csproj", "{5B0F6C09-3F89-0D7E-8529-D4746C002D61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86E431A2-37C9-78DE-4010-39872BF3C46A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86E431A2-37C9-78DE-4010-39872BF3C46A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86E431A2-37C9-78DE-4010-39872BF3C46A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86E431A2-37C9-78DE-4010-39872BF3C46A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EDD1C33-7CB7-4B60-966C-BFEAC30E3EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8EDD1C33-7CB7-4B60-966C-BFEAC30E3EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EDD1C33-7CB7-4B60-966C-BFEAC30E3EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,17 +49,21 @@ Global
 		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{86E431A2-37C9-78DE-4010-39872BF3C46A} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
 		{8EDD1C33-7CB7-4B60-966C-BFEAC30E3EC3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{E2D13D8B-43AF-6357-4E94-08225B9D46CD} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{1B45B560-5F3B-0467-D02B-1F0666639853} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574} = {5D7D01B6-30E0-4552-BE0E-6EE1577B5FA7}
 		{8B8629CE-7365-C2F6-1674-087C4A3CF090} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
+		{5B0F6C09-3F89-0D7E-8529-D4746C002D61} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {44782F14-DB85-4BF3-BFEA-254F451A02FA}

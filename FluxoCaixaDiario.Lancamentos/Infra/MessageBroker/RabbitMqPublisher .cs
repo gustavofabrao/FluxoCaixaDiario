@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
@@ -10,24 +11,29 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
     public class RabbitMqPublisher : IRabbitMqPublisher, IDisposable
     {
         private readonly IConnection _connection;
-        private readonly IChannel _channel;
         private readonly ILogger<RabbitMqPublisher> _logger;
+        private readonly IConnectionFactory _connectionFactory;
+        private readonly IRabbitMqChannelAdapter _channel;
 
-        public RabbitMqPublisher(IConfiguration configuration, ILogger<RabbitMqPublisher> logger)
+        public RabbitMqPublisher(IConfiguration configuration, 
+            ILogger<RabbitMqPublisher> logger, 
+            IConnectionFactory connectionFactory,
+            IRabbitMqChannelAdapter channel = null)
         {
             _logger = logger;
+            _connectionFactory = connectionFactory;
             try
             {
-                var factory = new ConnectionFactory()
+                _connection = _connectionFactory.CreateConnectionAsync().GetAwaiter().GetResult();
+                if (channel == null)
                 {
-                    HostName = configuration["RabbitMQ:HostName"],
-                    UserName = configuration["RabbitMQ:UserName"],
-                    Password = configuration["RabbitMQ:Password"],
-                    Port = int.Parse(configuration["RabbitMQ:Port"])
-                };
-
-                _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
-                _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+                    var realChannel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
+                    _channel = new RabbitMqChannelAdapter(realChannel);
+                }
+                else
+                {
+                    _channel = channel;
+                }
 
                 _logger.LogInformation("Conectado com o RabbitMQ e canal criado");
             }
@@ -42,7 +48,8 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
         {
             try
             {
-                _channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, durable: true);
+                _channel.ExchangeDeclareAsync(exchange: exchangeName, type: ExchangeType.Topic, 
+                    durable: true, autoDelete: false, null, cancellationToken: CancellationToken.None);
 
                 var body = JsonSerializer.SerializeToUtf8Bytes(message);
                 var properties = new BasicProperties
@@ -53,22 +60,23 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.MessageBroker
                 _channel.BasicPublishAsync(exchange: exchangeName,
                                      routingKey: routingKey,
                                      mandatory: true,
-                                     basicProperties: properties,
-                                     body: body);
+                                     properties: properties,
+                                     body: body,
+                                     cancellationToken: CancellationToken.None);
 
                 _logger.LogInformation("Mensagem publicada na Exchange '{ExchangeName}', Routing Key '{RoutingKey}'", exchangeName, routingKey);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao publicar mensagem no RabbitMQ. {Message}", message);
-                _channel.BasicNackAsync(0, false, true); // Nack da mensagem, a colocando de volta na fila
+                _channel.BasicNackAsync(0, false, true, CancellationToken.None); // Nack da mensagem, a colocando de volta na fila
             }
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
-            _channel?.CloseAsync();
+            _channel?.CloseAsync(0, null, CancellationToken.None);
             _connection?.CloseAsync();
             _logger.LogInformation("Conexão e canal do RabbitMQ fechados");
             GC.SuppressFinalize(this);
