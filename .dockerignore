@@ -1,0 +1,13 @@
+bin/
+obj/
+.vscode/
+.vs/
+.git/
+.gitignore
+appsettings*.Development.json
+appsettings*.Production.json
+*.db
+*.bak
+Dockerfile*
+docker-compose*
+README.md

@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  identityserver:
+    build:
+      context: ./src/MinhaIdentityServer
+      dockerfile: Dockerfile
+    container_name: identityserver_app
+    ports:
+      - "4435:8081"
+      - "5000:8080"
+    networks:
+      - saldo_diario_app
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=4435
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: always
+
+  lancamentosapi:
+    build:
+      context: ./src/MinhaAppLancamentos
+      dockerfile: Dockerfile
+    container_name: lancamentos_api
+    ports:
+      - "53036:8081"
+      - "53037:8080"
+    networks:
+      - saldo_diario_app
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=53036
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServer:Authority=https://identityserver:8081
+    depends_on:
+      - identityserver
+    restart: always
+
+  saldodiarioapi:
+    build:
+      context: ./src/MinhaAppSaldoDiario
+      dockerfile: Dockerfile
+    container_name: saldodiario_api
+    ports:
+      - "4445:8081"
+      - "4446:8080"      
+    networks:
+      - saldo_diario_app
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=4445
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServer:Authority=https://identityserver:8081
+    depends_on:
+      - identityserver
+    restart: always
+
+  fluxocaixadiario_web:
+    build:
+      context: ./src/FluxoCaixaDiario.Web
+      dockerfile: Dockerfile
+    container_name: fluxocaixadiario_web_app
+    ports:
+      - "4430:8081"
+      - "4431:8080"
+    networks:
+      - saldo_diario_app
+    environment:
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - ASPNETCORE_HTTPS_PORT=4430
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServer:Authority=https://identityserver:8081
+    depends_on:
+      - identityserver
+      - lancamentosapi
+      - saldodiarioapi
+    restart: always
+
+  k6:
+    image: grafana/k6
+    container_name: k6_testes_carga
+    networks:
+      - saldo_diario_app
+    volumes:
+      - ./tests/k6:/scripts
+    environment:
+      - K6_USERNAME=opah-admin
+      - K6_PASSWORD=Admin123!
+    # command: >
+      # sh -c "k6 run /scripts/lancamentos_load_test_autenticado.js && 
+             # k6 run /scripts/saldo_diario_load_test_autenticado.js"
+    command: ["tail", "-f", "/dev/null"]
+    restart: "no"
+
+  lancamentos_tests:
+    build:
+      context: .
+      dockerfile: tests/FluxoCaixaDiario.Lancamentos.Tests/Dockerfile
+    container_name: lancamentos_unit_tests
+    networks:
+      - saldo_diario_app
+    volumes:
+      - ./test_results/lancamentos:/app/testresults
+    command: ["tail", "-f", "/dev/null"]
+    restart: "no"
+
+  saldodiario_tests:
+    build:
+      context: .
+      dockerfile: tests/FluxoCaixaDiario.SaldoDiario.Tests/Dockerfile
+    container_name: saldodiario_unit_tests
+    networks:
+      - saldo_diario_app
+    volumes:
+      - ./test_results/saldodiario:/app/testresults
+    command: ["tail", "-f", "/dev/null"]
+    restart: "no"
+
+networks:
+  saldo_diario_app:
+    driver: bridge
