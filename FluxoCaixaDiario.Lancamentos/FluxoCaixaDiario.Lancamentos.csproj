@@ -23,12 +23,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FluxoCaixaDiario.Domain\FluxoCaixaDiario.Domain.csproj" />
+	  <Folder Include="Application\Queries\" />
+	  <Folder Include="Domain\Entities\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Application\Queries\" />
-	  <Folder Include="Domain\Entities\" />
+	  <ProjectReference Include="..\FluxoCaixaDiario.Shared\FluxoCaixaDiario.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

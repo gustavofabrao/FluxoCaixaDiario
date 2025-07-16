@@ -25,7 +25,7 @@ namespace FluxoCaixaDiario.Lancamentos.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("FluxoCaixaDiario.Domain.Entities.Transaction", b =>
+            modelBuilder.Entity("FluxoCaixaDiario.Shared.Entities.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

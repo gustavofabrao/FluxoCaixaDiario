@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using FluentValidation;
 using FluentValidation.TestHelper;
-using FluxoCaixaDiario.Domain.Enums;
 using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
+using FluxoCaixaDiario.Shared.Enums;
 using Moq;
 using System;
 using Xunit;

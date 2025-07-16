@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Entities;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
+using FluxoCaixaDiario.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;

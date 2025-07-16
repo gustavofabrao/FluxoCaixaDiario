@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Enums;
-using FluxoCaixaDiario.Domain.Events;
-using FluxoCaixaDiario.Domain.Helpers;
+using FluxoCaixaDiario.Shared.Enums;
+using FluxoCaixaDiario.Shared.Events;
+using FluxoCaixaDiario.Shared.Helpers;
 using FluxoCaixaDiario.SaldoDiario.Application.Commands;
 using FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker;
 using FluxoCaixaDiario.SaldoDiario.Tests.Generators;

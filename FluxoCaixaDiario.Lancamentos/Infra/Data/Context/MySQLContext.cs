@@ -1,4 +1,4 @@
-﻿using FluxoCaixaDiario.Domain.Entities;
+﻿using FluxoCaixaDiario.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FluxoCaixaDiario.Lancamentos.Infra.Data.Context

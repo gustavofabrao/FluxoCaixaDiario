@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Entities;
+using FluxoCaixaDiario.Shared.Entities;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;

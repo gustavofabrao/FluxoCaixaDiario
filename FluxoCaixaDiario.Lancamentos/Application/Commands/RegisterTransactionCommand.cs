@@ -1,4 +1,4 @@
-﻿using FluxoCaixaDiario.Domain.Enums;
+﻿using FluxoCaixaDiario.Shared.Enums;
 using MediatR;
 using System;
 

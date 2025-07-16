@@ -1,5 +1,5 @@
 ﻿using FluxoCaixaDiario.SaldoDiario.Application.Commands;
-using FluxoCaixaDiario.Domain.Events;
+using FluxoCaixaDiario.Shared.Events;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

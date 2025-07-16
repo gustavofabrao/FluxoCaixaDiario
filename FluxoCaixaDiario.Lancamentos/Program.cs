@@ -1,9 +1,9 @@
 using FluentValidation;
-using FluxoCaixaDiario.Domain.Repositories;
 using FluxoCaixaDiario.Lancamentos.Application.Common;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
+using FluxoCaixaDiario.Shared.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Rewrite;

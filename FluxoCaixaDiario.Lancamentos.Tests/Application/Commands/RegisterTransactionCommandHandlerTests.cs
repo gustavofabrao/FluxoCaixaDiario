@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Entities;
-using FluxoCaixaDiario.Domain.Repositories;
 using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
+using FluxoCaixaDiario.Shared.Entities;
+using FluxoCaixaDiario.Shared.Repositories;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Xunit;

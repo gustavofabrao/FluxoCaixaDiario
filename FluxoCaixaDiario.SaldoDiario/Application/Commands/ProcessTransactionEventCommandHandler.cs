@@ -1,6 +1,6 @@
 ﻿using FluxoCaixaDiario.SaldoDiario.Domain.Entities;
 using FluxoCaixaDiario.SaldoDiario.Infra.Data.Repositories;
-using FluxoCaixaDiario.Domain.Enums;
+using FluxoCaixaDiario.Shared.Enums;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;

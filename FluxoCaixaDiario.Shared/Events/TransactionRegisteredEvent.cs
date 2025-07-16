@@ -1,9 +1,8 @@
 ﻿using FluxoCaixaDiario.Shared.Enums;
-using MediatR;
-using System;
-namespace FluxoCaixaDiario.SaldoDiario.Application.Commands
+
+namespace FluxoCaixaDiario.Shared.Events
 {
-    public record ProcessTransactionEventCommand : IRequest
+    public class TransactionRegisteredEvent
     {
         public Guid TransactionId { get; set; }
         public DateTime TransactionDate { get; set; }

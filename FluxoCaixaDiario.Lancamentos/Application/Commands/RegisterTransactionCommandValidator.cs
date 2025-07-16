@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using FluxoCaixaDiario.Domain.Enums;
+using FluxoCaixaDiario.Shared.Enums;
 using System;
 
 namespace FluxoCaixaDiario.Lancamentos.Application.Commands

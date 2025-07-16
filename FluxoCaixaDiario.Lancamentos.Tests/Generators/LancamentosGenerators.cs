@@ -1,8 +1,8 @@
 ﻿using Bogus;
-using FluxoCaixaDiario.Domain.Entities;
-using FluxoCaixaDiario.Domain.Enums;
 using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
+using FluxoCaixaDiario.Shared.Entities;
+using FluxoCaixaDiario.Shared.Enums;
 
 namespace FluxoCaixaDiario.Lancamentos.Tests.Generators
 {

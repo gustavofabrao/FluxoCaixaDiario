@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FluxoCaixaDiario.IdentityServer.Controllers.MainModule.Home
 {
-    //[SecurityHeaders]
+    [SecurityHeaders]
     [AllowAnonymous]
     public class HomeController : Controller
     {

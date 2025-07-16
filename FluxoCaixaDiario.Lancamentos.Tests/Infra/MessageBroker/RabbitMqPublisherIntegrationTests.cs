@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Helpers;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
+using FluxoCaixaDiario.Shared.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;

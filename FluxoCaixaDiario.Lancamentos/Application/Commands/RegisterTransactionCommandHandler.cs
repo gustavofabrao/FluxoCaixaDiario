@@ -1,8 +1,8 @@
-﻿using FluxoCaixaDiario.Domain.Entities;
-using FluxoCaixaDiario.Domain.Enums;
-using FluxoCaixaDiario.Domain.Events;
-using FluxoCaixaDiario.Domain.Repositories;
+﻿using FluxoCaixaDiario.Shared.Entities;
+using FluxoCaixaDiario.Shared.Events;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
+using FluxoCaixaDiario.Shared.Enums;
+using FluxoCaixaDiario.Shared.Repositories;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using System;

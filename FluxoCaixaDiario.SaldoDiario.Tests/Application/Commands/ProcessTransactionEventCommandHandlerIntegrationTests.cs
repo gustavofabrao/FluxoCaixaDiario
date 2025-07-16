@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using FluxoCaixaDiario.Domain.Enums;
+using FluxoCaixaDiario.Shared.Enums;
 using FluxoCaixaDiario.SaldoDiario.Domain.Entities;
 using FluxoCaixaDiario.SaldoDiario.Infra.Data.Context;
 using FluxoCaixaDiario.SaldoDiario.Infra.Data.Repositories;

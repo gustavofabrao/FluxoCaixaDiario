@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace FluxoCaixaDiario.IdentityServer.Controllers.MainModule.Account
 {
-    //[SecurityHeaders]
+    [SecurityHeaders]
     [AllowAnonymous]
     public class AccountController : Controller
     {

@@ -1,7 +1,7 @@
 ﻿using Bogus;
-using FluxoCaixaDiario.Domain.Entities;
-using FluxoCaixaDiario.Domain.Enums;
-using FluxoCaixaDiario.Domain.Events;
+using FluxoCaixaDiario.Shared.Entities;
+using FluxoCaixaDiario.Shared.Enums;
+using FluxoCaixaDiario.Shared.Events;
 using FluxoCaixaDiario.SaldoDiario.Application.Commands;
 using FluxoCaixaDiario.SaldoDiario.Domain.Entities;
 using FluxoCaixaDiario.SaldoDiario.Tests.Infra.MessageBroker;

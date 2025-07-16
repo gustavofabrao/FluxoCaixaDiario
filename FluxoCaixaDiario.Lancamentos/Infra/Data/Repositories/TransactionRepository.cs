@@ -1,6 +1,6 @@
-﻿using FluxoCaixaDiario.Domain.Entities;
-using FluxoCaixaDiario.Domain.Repositories;
-using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
+﻿using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
+using FluxoCaixaDiario.Shared.Entities;
+using FluxoCaixaDiario.Shared.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
