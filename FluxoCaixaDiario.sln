@@ -19,11 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.SaldoDiari
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Web", "FluxoCaixaDiario.Web\FluxoCaixaDiario.Web.csproj", "{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.IdentityServer", "FluxoCaixaDiario.IdentityServer-bkp\FluxoCaixaDiario.IdentityServer.csproj", "{8B8629CE-7365-C2F6-1674-087C4A3CF090}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Lancamentos.Tests", "FluxoCaixaDiario.Lancamentos.Tests\FluxoCaixaDiario.Lancamentos.Tests.csproj", "{5B0F6C09-3F89-0D7E-8529-D4746C002D61}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.SaldoDiario.Tests", "FluxoCaixaDiario.SaldoDiario.Tests\FluxoCaixaDiario.SaldoDiario.Tests.csproj", "{90A15774-4920-28D3-0F9A-33F4241B9C3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.IdentityServer", "FluxoCaixaDiario.IdentityServer\FluxoCaixaDiario.IdentityServer.csproj", "{C150787D-F105-ADAC-0FF5-F9EB3C0781CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,6 @@ Global
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B8629CE-7365-C2F6-1674-087C4A3CF090}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,6 +55,10 @@ Global
 		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C150787D-F105-ADAC-0FF5-F9EB3C0781CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C150787D-F105-ADAC-0FF5-F9EB3C0781CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C150787D-F105-ADAC-0FF5-F9EB3C0781CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C150787D-F105-ADAC-0FF5-F9EB3C0781CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,9 +68,9 @@ Global
 		{E2D13D8B-43AF-6357-4E94-08225B9D46CD} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{1B45B560-5F3B-0467-D02B-1F0666639853} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574} = {5D7D01B6-30E0-4552-BE0E-6EE1577B5FA7}
-		{8B8629CE-7365-C2F6-1674-087C4A3CF090} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
 		{90A15774-4920-28D3-0F9A-33F4241B9C3E} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
+		{C150787D-F105-ADAC-0FF5-F9EB3C0781CA} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {44782F14-DB85-4BF3-BFEA-254F451A02FA}
