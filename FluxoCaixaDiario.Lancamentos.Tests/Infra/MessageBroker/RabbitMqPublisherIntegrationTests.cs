@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluxoCaixaDiario.Domain.Helpers;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
 using Microsoft.Extensions.Configuration;
@@ -162,18 +163,6 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Infra.MessageBroker
                     consumerConnection.Dispose();
                 }
             }
-        }
-    }
-    
-    public static class TaskExtensions
-    {
-        public static async Task<T> WithTimeout<T>(this Task<T> task, TimeSpan timeout)
-        {
-            if (await Task.WhenAny(task, Task.Delay(timeout)) != task)
-            {
-                throw new TimeoutException($"Operação sofreu time out depois de {timeout.TotalSeconds} segundos");
-            }
-            return await task;
         }
     }
 }

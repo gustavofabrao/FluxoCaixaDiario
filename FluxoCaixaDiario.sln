@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Services", "2 - Service
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Tests", "4 - Tests", "{C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Domain", "3 - Domain", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Shared", "3 - Shared", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Domain", "FluxoCaixaDiario.Domain\FluxoCaixaDiario.Domain.csproj", "{8EDD1C33-7CB7-4B60-966C-BFEAC30E3EC3}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.IdentityServer", "FluxoCaixaDiario.IdentityServer-bkp\FluxoCaixaDiario.IdentityServer.csproj", "{8B8629CE-7365-C2F6-1674-087C4A3CF090}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.Lancamentos.Tests", "FluxoCaixaDiario.Lancamentos.Tests\FluxoCaixaDiario.Lancamentos.Tests.csproj", "{5B0F6C09-3F89-0D7E-8529-D4746C002D61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxoCaixaDiario.SaldoDiario.Tests", "FluxoCaixaDiario.SaldoDiario.Tests\FluxoCaixaDiario.SaldoDiario.Tests.csproj", "{90A15774-4920-28D3-0F9A-33F4241B9C3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90A15774-4920-28D3-0F9A-33F4241B9C3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{F4D86C5C-5ABF-057E-BD44-AA2A83E0D574} = {5D7D01B6-30E0-4552-BE0E-6EE1577B5FA7}
 		{8B8629CE-7365-C2F6-1674-087C4A3CF090} = {BE8F341D-1378-4B40-88F9-6901B74F17C3}
 		{5B0F6C09-3F89-0D7E-8529-D4746C002D61} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
+		{90A15774-4920-28D3-0F9A-33F4241B9C3E} = {C6E474B3-4677-4D59-AEB5-05AFB3DA18D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {44782F14-DB85-4BF3-BFEA-254F451A02FA}

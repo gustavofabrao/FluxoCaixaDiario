@@ -5,7 +5,7 @@ namespace FluxoCaixaDiario.Lancamentos.Infra.Data.Context
 {
     public class MySQLContext : DbContext
     {
-        public DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
 
         public MySQLContext(DbContextOptions<MySQLContext> options) : base(options) { }
 

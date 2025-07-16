@@ -5,7 +5,7 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.Data.Context
 {
     public class MySQLContext : DbContext
     {
-        public DbSet<DailyBalance> DailyBalances { get; set; }
+        public virtual DbSet<DailyBalance> DailyBalances { get; set; }
 
         public MySQLContext(DbContextOptions<MySQLContext> options) : base(options) { }
 
