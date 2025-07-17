@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using FluxoCaixaDiario.Lancamentos.Application.Commands;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
+using FluxoCaixaDiario.Lancamentos.Services.IServices;
 using FluxoCaixaDiario.Lancamentos.Tests.Generators;
 using FluxoCaixaDiario.Shared.Entities;
 using FluxoCaixaDiario.Shared.Repositories;
@@ -13,18 +14,18 @@ namespace FluxoCaixaDiario.Lancamentos.Tests.Application.Commands
     public class RegisterTransactionCommandHandlerTests
     {
         private readonly Mock<ITransactionRepository> _mockLancamentoRepository;
-        private readonly Mock<IRabbitMqPublisher> _mockMessagePublisher;
-        private readonly Mock<IConfiguration> _mockConfiguration;
+        private readonly Mock<IRedisMessageBuffer> _mockRedisMessageBuffer; 
         private readonly RegisterTransactionCommandHandler _handler;
 
         public RegisterTransactionCommandHandlerTests()
         {
             _mockLancamentoRepository = new Mock<ITransactionRepository>();
-            _mockMessagePublisher = new Mock<IRabbitMqPublisher>();
-            _mockConfiguration = new Mock<IConfiguration>();
+            _mockRedisMessageBuffer = new Mock<IRedisMessageBuffer>(); 
             _handler = new RegisterTransactionCommandHandler(_mockLancamentoRepository.Object,
-                            _mockMessagePublisher.Object, 
-                            _mockConfiguration.Object);
+                            _mockRedisMessageBuffer.Object, 
+                            Mock.Of<Microsoft.Extensions.Logging.ILogger<RegisterTransactionCommandHandler>>(),
+                            Mock.Of<StackExchange.Redis.IConnectionMultiplexer>(),
+                            Mock.Of<IConfiguration>());
         }
 
         [Fact]

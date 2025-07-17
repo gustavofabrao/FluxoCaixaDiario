@@ -3,6 +3,8 @@ using FluxoCaixaDiario.Lancamentos.Application.Common;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Context;
 using FluxoCaixaDiario.Lancamentos.Infra.Data.Repositories;
 using FluxoCaixaDiario.Lancamentos.Infra.MessageBroker;
+using FluxoCaixaDiario.Lancamentos.Services;
+using FluxoCaixaDiario.Lancamentos.Services.IServices;
 using FluxoCaixaDiario.Shared.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -108,6 +111,15 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
+    return ConnectionMultiplexer.Connect(redisConnectionString);
+});
+
+builder.Services.AddScoped<IRedisMessageBuffer, RedisMessageBuffer>();
+builder.Services.AddHostedService<RedisBatchProcessor>();
 
 var app = builder.Build();
 

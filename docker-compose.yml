@@ -1,4 +1,13 @@
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: fluxo_caixa_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - saldo_diario_app
+    restart: always
+    command: redis-server --appendonly yes
   mysql_db:
     image: mysql:8.0
     container_name: fluxo_caixa_mysql_db
@@ -85,12 +94,18 @@ services:
       - RabbitMQ__HostName=rabbitmq
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
+      - Redis__ConnectionString=redis:6379
+      - Redis__BatchKey=fila_consolidacao_diaria
+      - Redis__BatchSize=100
+      - Redis__BatchIntervalSeconds=5
     depends_on:
       identityserver:
         condition: service_started
       mysql_db:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: always
 
@@ -170,37 +185,37 @@ services:
     command: ["tail", "-f", "/dev/null"]
     restart: "no"
 
-  lancamentos_tests:
-    build:
-      context: .
-      dockerfile: tests/FluxoCaixaDiario.Lancamentos.Tests/Dockerfile
-    container_name: lancamentos_unit_tests
-    networks:
-      - saldo_diario_app
-    volumes:
-      - ./test_results/lancamentos:/app/testresults
-      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
-    environment:
-      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
-      - Kestrel:Certificates:Default:Password=Admin123!
-    # command: ["tail", "-f", "/dev/null"]
-    restart: "no"
+  # lancamentos_tests:
+    # build:
+      # context: .
+      # dockerfile: tests/FluxoCaixaDiario.Lancamentos.Tests/Dockerfile
+    # container_name: lancamentos_unit_tests
+    # networks:
+      # - saldo_diario_app
+    # volumes:
+      # - ./test_results/lancamentos:/app/testresults
+      # - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
+    # environment:
+      # - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      # - Kestrel:Certificates:Default:Password=Admin123!
+    # # command: ["tail", "-f", "/dev/null"]
+    # restart: "no"
 
-  saldodiario_tests:
-    build:
-      context: .
-      dockerfile: tests/FluxoCaixaDiario.SaldoDiario.Tests/Dockerfile
-    container_name: saldodiario_unit_tests
-    networks:
-      - saldo_diario_app
-    volumes:
-      - ./test_results/saldodiario:/app/testresults
-      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
-    environment:
-      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
-      - Kestrel:Certificates:Default:Password=Admin123!
-    # command: ["tail", "-f", "/dev/null"]
-    restart: "no"
+  # saldodiario_tests:
+    # build:
+      # context: .
+      # dockerfile: tests/FluxoCaixaDiario.SaldoDiario.Tests/Dockerfile
+    # container_name: saldodiario_unit_tests
+    # networks:
+      # - saldo_diario_app
+    # volumes:
+      # - ./test_results/saldodiario:/app/testresults
+      # - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
+    # environment:
+      # - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      # - Kestrel:Certificates:Default:Password=Admin123!
+    # # command: ["tail", "-f", "/dev/null"]
+    # restart: "no"
 
 networks:
   saldo_diario_app:

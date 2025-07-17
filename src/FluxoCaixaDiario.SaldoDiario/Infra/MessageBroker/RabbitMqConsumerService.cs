@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -83,53 +84,70 @@ namespace FluxoCaixaDiario.SaldoDiario.Infra.MessageBroker
             stoppingToken.ThrowIfCancellationRequested();
 
             // Método Received  abaixo seja assíncrono, liberando o thread do Consumer enquanto operações de entrada e saída estão em andamento
-            var consumer = new AsyncEventingBasicConsumer(_channel); 
+            var consumer = new AsyncEventingBasicConsumer(_channel);
 
             _logger.LogInformation("RabbitMQ Consumer: Iniciando o consumo de mensagens da fila '{QueueName}'", _queueName);
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
+                var mensagens = Encoding.UTF8.GetString(body);
                 _logger.LogInformation("RabbitMQ Consumer: Mensagem recebida. Delivery Tag: {DeliveryTag}", ea.DeliveryTag);
 
                 try
                 {
-                    var transactionEvent = JsonSerializer.Deserialize<TransactionRegisteredEvent>(message);
-
-                    if (transactionEvent != null)
+                    // Recebe agora uma lista de mensagens vinda do Redis 
+                    var transactionsBatch = new List<TransactionRegisteredEvent>();
+                    var jsonStringsBatch = JsonSerializer.Deserialize<List<string>>(mensagens);  
+                    foreach (var jsonString in jsonStringsBatch)
                     {
-                        // Cria um escopo para o serviço para cada mensagem processada. Essencial em BackgroundService
+                        var transactionEvent = JsonSerializer.Deserialize<TransactionRegisteredEvent>(jsonString);
+                        if (transactionEvent != null)
+                        {
+                            transactionsBatch.Add(transactionEvent);
+                        }
+                    }
+
+                    if (transactionsBatch.Count > 0)
+                    {
+                        // Cria um escopo para o serviço para cada lote de processamento. Essencial em BackgroundService
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                            var command = new ProcessTransactionEventCommand() {
-                                TransactionId = transactionEvent.TransactionId,
-                                TransactionDate = transactionEvent.TransactionDate,
-                                Amount = transactionEvent.Amount,
-                                Type = transactionEvent.Type 
-                            };
-                            await mediator.Send(command, stoppingToken);
+                            foreach (var transaction in transactionsBatch)
+                            {
+                                var command = new ProcessTransactionEventCommand()
+                                {
+                                    TransactionId = transaction.TransactionId,
+                                    TransactionDate = transaction.TransactionDate,
+                                    Amount = transaction.Amount,
+                                    Type = transaction.Type
+                                };
+
+                                await mediator.Send(command, stoppingToken);
+                                _logger.LogInformation("RabbitMQ Consumer: Lançamento processado com sucesso: {Lancamento}", transaction.ToString());
+
+                            }
                         }
                     }
 
                     // Confirma que a mensagem foi processada com sucesso
                     await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-                    _logger.LogInformation("RabbitMQ Consumer: Mensagem com Delivery Tag {DeliveryTag} processada e ACK enviado", ea.DeliveryTag);
+                    _logger.LogInformation("RabbitMQ Consumer: Mensagens com Delivery Tag {DeliveryTag} processadas e ACK enviado", ea.DeliveryTag);
                 }
                 catch (JsonException jsonEx)
                 {
-                    _logger.LogError(jsonEx, "RabbitMQ Consumer: Erro de desserialização JSON para mensagem com Delivery Tag {DeliveryTag}. Mensagem: {Message}", ea.DeliveryTag, message);
+                    _logger.LogError(jsonEx, "RabbitMQ Consumer: Erro de desserialização JSON para as mensagens com Delivery Tag {DeliveryTag}. Mensagens: {mensagens}", ea.DeliveryTag, mensagens);
                     // Não re-enfileira mensagem com JSON inválido para evitar loop indesejado e infinito
                     await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "RabbitMQ Consumer: Erro ao processar mensagem com Delivery Tag {DeliveryTag}. Mensagem: {Message}", ea.DeliveryTag, message);
+                    _logger.LogError(ex, "RabbitMQ Consumer: Erro ao processar as mensagens com Delivery Tag {DeliveryTag}. Mensagens: {mensagens}", ea.DeliveryTag, mensagens);
                     // Rejeita a mensagem e a re-enfileira para que possa ser reprocessada
                     await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true);
                 }
             };
-            
+
             _channel.BasicConsumeAsync(queue: _queueName, autoAck: false, consumer: consumer); // autoAck: false controle manual
 
             _logger.LogInformation("RabbitMQ Consumer: Consumo iniciado na fila '{QueueName}'.", _queueName);

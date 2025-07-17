@@ -1,0 +1,16 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS testrunner
+
+WORKDIR /src
+
+COPY FluxoCaixaDiario.sln .
+
+COPY src/ src/
+COPY tests/ tests/
+
+RUN dotnet restore "FluxoCaixaDiario.sln"
+
+COPY . .
+
+WORKDIR /src/tests/FluxoCaixaDiario.Lancamentos.Tests
+
+CMD ["dotnet", "test", "--no-build", "--logger", "trx;LogFileName=test-results.trx;ResultsDirectory=/app/testresults"]
