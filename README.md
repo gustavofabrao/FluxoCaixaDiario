@@ -87,4 +87,92 @@ O sistema é projetado para ser **resiliente a falhas** e lidar com **picos de t
 
 * **Logs:** **Serilog**, **NLog**.
 * **Monitoramento:** **Health Checks**, **Prometheus** e **Grafana**.
-* **Tracing:** **Jaeger** e **
+* **Tracing:** **Jaeger** e **OpenTelemetry**.
+
+### Testes
+
+* **Testes Unitários:**
+    * **Frameworks:** xUnit
+    * **Mocks:** Moq
+    * **Asserções:** FluentAssertions
+    * **Dados Falsos:** Bogus (com Faker)
+    * **Nomenclatura:** `"Method_Scenario_ExpectedResult"`
+    * **Organização:** Arrange-Act-Assert (AAA)
+* **Testes de Integração:**
+    * Realizados em memória e utilizando **Testcontainers** (ex: `Testcontainers.MySql`) para provisionar dependências de forma isolada e descartável.
+* **Testes de Carga:**
+    * **Framework:** **k6** (Grafana Labs)
+    * **Regras de Configuração (Exemplo de Carga):**
+        * Fórmula: `RPS = (VUs * IterationsPerSecond)`
+        * `Sleep(1s)`: Cada Virtual User (VU) "dorme" por 1 segundo, permitindo idealmente 1 requisição por segundo por VU.
+        * **Cálculo Estimado:** 50 VUs \* 1 RPS/VU = **50 RPS**.
+    * **Métricas Chave:** `http_req_duration` (p95 crucial), `http_req_failed` (monitorar < 5%), `http_reqs`, `vus`/`vus_max`, `data_received`/`data_sent`. O k6 apresenta um resumo final indicando o status dos *thresholds*.
+
+### Conteinerização
+
+* **Docker:** `Dockerfile`s com o padrão **multi-stage build** para criar imagens otimizadas.
+* **Docker Compose:** Orquestrador para definir, executar e gerenciar todos os serviços da aplicação e suas dependências.
+
+---
+
+## 🚀 Como Rodar o Projeto (Dockerizado)
+
+1.  Navegue até a pasta raiz do seu projeto (onde se encontra o arquivo `docker-compose.yml`).
+2.  **Confie no certificado HTTPS (apenas uma vez, se necessário):**
+    ```bash
+    dotnet dev-certs https --trust
+    ```
+3.  **Construa as imagens e inicie os contêineres:**
+    ```bash
+    docker-compose up --build -d
+    ```
+    *Ou, se preferir iniciar serviços específicos:*
+    ```bash
+    docker-compose up --build -d identityserver lancamentosapi saldodiarioapi fluxocaixadiario_web
+    ```
+
+### Verificação e Logs
+
+* **Verificar o status dos contêineres:**
+    ```bash
+    docker-compose ps
+    ```
+* **Ver os logs de todos os serviços (em tempo real):**
+    ```bash
+    docker-compose logs -f
+    ```
+* **Verificar os logs de um serviço específico (ex: `lancamentos_tests`):**
+    ```bash
+    docker-compose logs lancamentos_tests
+    ```
+
+### Execução de Testes
+
+* **Execução dos Testes Unitários da API de Lançamentos:**
+    ```bash
+    docker-compose run --rm lancamentos_tests dotnet test "./src/FluxoCaixaDiario.Lancamentos.Tests/FluxoCaixaDiario.Lancamentos.Tests.csproj" --logger "trx;LogFileName=test-results.trx;ResultsDirectory=/app/testresults"
+    ```
+* **Execução dos Testes Unitários da API de Saldo Diário:**
+    ```bash
+    docker-compose run --rm saldodiario_tests dotnet test --logger "trx;LogFileName=test-results.trx" --results-directory "/app/testresults"
+    ```
+* **Execução dos Testes de Carga do k6 (separadamente):**
+    ```bash
+    docker-compose run --rm k6 k6 run /scripts/lancamentos_load_test_autenticado.js
+    docker-compose run --rm k6 k6 run /scripts/saldo_diario_load_test_autenticado.js
+    ```
+
+### Parar e Remover Contêineres
+
+* **Para parar e remover todos os contêineres e redes criadas pelo Docker Compose:**
+    ```bash
+    docker-compose down
+    ```
+
+---
+
+## 🔮 Possíveis Evoluções e Melhorias Futuras
+
+* **Controle de Acesso Fino (IdentityServer):** A funcionalidade de controle de escopos por tipos de permissões pode ser expandida e integrada mais profundamente com as regras de negócio para um controle de acesso ainda mais granular.
+* **CI/CD com Análise Estática:** Implementar um pipeline de Continuous Integration/Continuous Deployment (CI/CD) com ferramentas de análise estática de código (ex: SonarQube) para garantir a qualidade contínua.
+* **Monitoramento e Dimensionamento de Filas (RabbitMQ):** Monitorar ativamente o tamanho das filas, a latência de processamento e a saúde dos serviços para otimizar os parâmetros de `BatchIntervalMilliseconds` e `MaxBatchSize`. Escalar horizontalmente os serviços (Lançamentos e Consumidor) conforme a carga.
