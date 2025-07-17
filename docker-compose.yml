@@ -1,75 +1,150 @@
-version: '3.8'
-
 services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: fluxo_caixa_mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: FLuxoCaixa_IdentityServer
+    ports:
+      - "3606:3306"
+    networks:
+      - saldo_diario_app
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+ 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: fluxo_caixa_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - saldo_diario_app
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: always
+    
   identityserver:
     build:
-      context: ./src/MinhaIdentityServer
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/FluxoCaixaDiario.IdentityServer/Dockerfile
     container_name: identityserver_app
     ports:
       - "4435:8081"
-      - "5000:8080"
+      - "4436:8080"
     networks:
       - saldo_diario_app
+    volumes:
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ASPNETCORE_HTTPS_PORT=4435
       - ASPNETCORE_ENVIRONMENT=Development
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
+      - MySQlConnection__MySQlConnectionString=Server=mysql_db;Port=3306;Database=FLuxoCaixa_IdentityServer;Uid=root;Pwd=admin;
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: always
 
   lancamentosapi:
     build:
-      context: ./src/MinhaAppLancamentos
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/FluxoCaixaDiario.Lancamentos/Dockerfile
     container_name: lancamentos_api
     ports:
       - "53036:8081"
       - "53037:8080"
     networks:
       - saldo_diario_app
+    volumes:
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ASPNETCORE_HTTPS_PORT=53036
       - ASPNETCORE_ENVIRONMENT=Development
       - IdentityServer:Authority=https://identityserver:8081
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
+      - MySQlConnection__MySQlConnectionString=Server=mysql_db;Port=3306;Database=FLuxoCaixa_Lancamentos;Uid=root;Pwd=admin;
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
-      - identityserver
+      identityserver:
+        condition: service_started
+      mysql_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: always
 
   saldodiarioapi:
     build:
-      context: ./src/MinhaAppSaldoDiario
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/FluxoCaixaDiario.SaldoDiario/Dockerfile
     container_name: saldodiario_api
     ports:
       - "4445:8081"
       - "4446:8080"      
     networks:
       - saldo_diario_app
+    volumes:
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ASPNETCORE_HTTPS_PORT=4445
       - ASPNETCORE_ENVIRONMENT=Development
       - IdentityServer:Authority=https://identityserver:8081
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
+      - MySQlConnection__MySQlConnectionString=Server=mysql_db;Port=3306;Database=FLuxoCaixa_Saldos;Uid=root;Pwd=admin;
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
-      - identityserver
+      identityserver:
+        condition: service_started
+      mysql_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: always
 
   fluxocaixadiario_web:
     build:
-      context: ./src/FluxoCaixaDiario.Web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/FluxoCaixaDiario.Web/Dockerfile
     container_name: fluxocaixadiario_web_app
     ports:
       - "4430:8081"
       - "4431:8080"
     networks:
       - saldo_diario_app
+    volumes:
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - ASPNETCORE_URLS=https://+:8081;http://+:8080
       - ASPNETCORE_HTTPS_PORT=4430
       - ASPNETCORE_ENVIRONMENT=Development
       - IdentityServer:Authority=https://identityserver:8081
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
     depends_on:
       - identityserver
       - lancamentosapi
@@ -83,9 +158,12 @@ services:
       - saldo_diario_app
     volumes:
       - ./tests/k6:/scripts
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - K6_USERNAME=opah-admin
       - K6_PASSWORD=Admin123!
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
     # command: >
       # sh -c "k6 run /scripts/lancamentos_load_test_autenticado.js && 
              # k6 run /scripts/saldo_diario_load_test_autenticado.js"
@@ -101,7 +179,11 @@ services:
       - saldo_diario_app
     volumes:
       - ./test_results/lancamentos:/app/testresults
-    command: ["tail", "-f", "/dev/null"]
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
+    environment:
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
+    # command: ["tail", "-f", "/dev/null"]
     restart: "no"
 
   saldodiario_tests:
@@ -113,7 +195,11 @@ services:
       - saldo_diario_app
     volumes:
       - ./test_results/saldodiario:/app/testresults
-    command: ["tail", "-f", "/dev/null"]
+      - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
+    environment:
+      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
+      - Kestrel:Certificates:Default:Password=Admin123!
+    # command: ["tail", "-f", "/dev/null"]
     restart: "no"
 
 networks:

@@ -1,14 +1,17 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS testrunner
+
 WORKDIR /app
 
-COPY ["FluxoCaixaDiario.sln", "./"]
-COPY ["src/FluxoCaixaDiario.SaldoDiario/FluxoCaixaDiario.SaldoDiario.csproj", "src/FluxoCaixaDiario.SaldoDiario/"]
-COPY ["tests/FluxoCaixaDiario.SaldoDiario.Tests/FluxoCaixaDiario.SaldoDiario.Tests.csproj", "tests/FluxoCaixaDiario.SaldoDiario.Tests/"]
-
-RUN dotnet restore "FluxoCaixaDiario.sln"
+RUN rm -rf ./src/*/bin/ || true && \
+    rm -rf ./src/*/obj/ || true && \
+    rm -rf ./tests/*/bin/ || true && \
+    rm -rf ./tests/*/obj/ || true && \
+    dotnet nuget locals all --clear
 
 COPY . .
 
-WORKDIR "/app/tests/FluxoCaixaDiario.SaldoDiario.Tests"
+RUN dotnet restore "FluxoCaixaDiario.sln"
 
-ENTRYPOINT ["dotnet", "test", "--no-build", "--logger", "trx;LogFileName=test-results.trx", "--results-directory", "/app/testresults"]
+WORKDIR /app/tests/FluxoCaixaDiario.SaldoDiario.Tests
+
+CMD ["dotnet", "test", "--logger", "trx;LogFileName=test-results.trx;ResultsDirectory=/app/testresults"]

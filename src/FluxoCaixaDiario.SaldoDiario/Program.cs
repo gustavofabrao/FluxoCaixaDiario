@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,11 @@ builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
         options.Authority = builder.Configuration["Auth:Authority"];
-        options.RequireHttpsMetadata = true;
+        options.RequireHttpsMetadata = false;
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false

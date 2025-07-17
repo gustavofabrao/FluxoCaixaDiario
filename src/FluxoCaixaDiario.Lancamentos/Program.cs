@@ -17,6 +17,7 @@ using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,11 @@ builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
         options.Authority = builder.Configuration["Auth:Authority"];
-        options.RequireHttpsMetadata = true;
+        options.RequireHttpsMetadata = false;
+        options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false
