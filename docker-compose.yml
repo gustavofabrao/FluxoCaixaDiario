@@ -105,8 +105,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      redis:
-        condition: service_healthy
     restart: always
 
   saldodiarioapi:
@@ -172,17 +170,18 @@ services:
     networks:
       - saldo_diario_app
     volumes:
-      - ./tests/k6:/scripts
+      - ./tests/k6:/app
       - ./certs/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     environment:
       - K6_USERNAME=opah-admin
       - K6_PASSWORD=Admin123!
-      - Kestrel:Certificates:Default:Path=/https/aspnetapp.pfx
-      - Kestrel:Certificates:Default:Password=Admin123!
-    # command: >
-      # sh -c "k6 run /scripts/lancamentos_load_test_autenticado.js && 
-             # k6 run /scripts/saldo_diario_load_test_autenticado.js"
-    command: ["tail", "-f", "/dev/null"]
+      - IDENTITY_SERVER_URL=https://identityserver:8081 
+      - BASE_URL_LANCAMENTOS_API=https://lancamentosapi:8081
+      - BASE_URL_SALDO_DIARIO_API=https://saldodiarioapi:8081
+    depends_on:
+      - identityserver
+      - lancamentosapi
+      - saldodiarioapi
     restart: "no"
 
   # lancamentos_tests:

@@ -1,29 +1,35 @@
 import http from 'k6/http';
 import { check, group, sleep, fail } from 'k6';
 import { SharedArray } from 'k6/data';
-import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { Trend } from 'k6/metrics';
 
-const BASE_URL = 'https://localhost:53036';
-const BASE_URL_LOGIN = 'https://localhost:4435';
+const IDENTITY_SERVER_URL = __ENV.IDENTITY_SERVER_URL || 'https://localhost:4435';
+const BASE_URL_LANCAMENTOS = __ENV.BASE_URL_LANCAMENTOS_API || 'https://localhost:53036'; 
+const BASE_URL_SALDO_DIARIO = __ENV.BASE_URL_SALDO_DIARIO_API || 'https://localhost:4445';
 
-const LOGIN_PAGE_URL = `${BASE_URL_LOGIN}/Account/Login`;
-const LOGIN_FORM_POST_URL = `${BASE_URL_LOGIN}/Account/Login`;
+const LOGIN_PAGE_URL = `${IDENTITY_SERVER_URL}/Account/Login`;
+const LOGIN_FORM_POST_URL = `${IDENTITY_SERVER_URL}/Account/Login`;
 
 const TEST_USERNAME = __ENV.K6_USERNAME || 'opah-admin';
 const TEST_PASSWORD = __ENV.K6_PASSWORD || 'Admin123!';
 
-const ids = new SharedArray('ids', function () {
+const lancamentosTrend = new Trend('lancamentos_latencia_api');
+
+const datasParaConsulta = new SharedArray('datas_para_consulta', function () {
     const data = [];
-    for (let i = 0; i < 100; i++) {
-        data.push(uuidv4());
+    const endDate = new Date();
+    for (let i = 0; i < 30; i++) {
+        const date = new Date(endDate);
+        date.setDate(endDate.getDate() - i);
+        data.push(date.toISOString().split('T')[0]);
     }
     return data;
 });
 
-let isLoggedIn = false;
+let isLoggedIn = false; 
 
 export const options = {
-	insecureSkipTLSVerify: true,
+    insecureSkipTLSVerify: true,
     stages: [
         { duration: '30s', target: 20 },
         { duration: '5m', target: 50 },
@@ -33,11 +39,12 @@ export const options = {
         http_req_failed: ['rate<0.05'],
         http_req_duration: ['p(95)<1000'],
         'http_req_duration{scenario:login_flow}': ['p(95)<2000'],
-        'http_req_duration{scenario:insercao_lancamentos}': ['p(95)<1000'],
+        'http_req_duration{scenario:cria_lancamento}': ['p(95)<1000'],
+        'lancamentos_latencia_api': ['p(95)<1000'],
     },
     ext: {
         loadimpact: {
-            scenario: 'insercao_lancamentos',
+            scenario: 'cria_lancamento',
         },
     },
 };
@@ -48,14 +55,16 @@ function loginWithCookies() {
             tags: { scenario: 'login_flow' }
         });
 
-        check(res, {
-            'GET Login Page: Status 200': (r) => r.status === 200,
-            'GET Login Page: Contém formulário de login': (r) => r.body.includes('name="username"') && r.body.includes('name="password"')
-        });
-
+        check(res, { 'GET Login Page: Status 200': (r) => r.status === 200 });
+        
         if (res.status !== 200) {
-            fail('Falha crítica ao carregar página de login.');
+            fail(`Falha crítica ao carregar página de login. Status: ${res.status}. Body: ${res.body}`);
         }
+
+        check(res, {
+            'GET Login Page: Contém formulário de login (username/password)': (r) => r.body.includes('name="username"') && r.body.includes('name="password"'),
+            'GET Login Page: Contém formulário de login (form action)': (r) => r.body.includes('<form action="/Account/Login" method="post">')
+        });
 
         const requestVerificationToken = res.html().find('input[name="__RequestVerificationToken"]').val();
         
@@ -92,48 +101,46 @@ function loginWithCookies() {
             isLoggedIn = true;
         } else {
             isLoggedIn = false;
-            fail('Falha crítica de login, não é possível prosseguir.');
+            fail(`Falha crítica de login, não é possível prosseguir. Status: ${res.status}. Body: ${res.body}`);
         }
     });
 }
 
 export default function () {
-    if (!isLoggedIn) { 
+    if (__VU == 0 && !isLoggedIn) {
         loginWithCookies();
         sleep(2);
-    }
-
-    if (!isLoggedIn) {
+    } else if (!isLoggedIn) {
         sleep(1);
-        return;
+        return; 
     }
     
-    group('Criação do Lançamento Autenticado', () => {
-        const url = `${BASE_URL}/api/v1/transacoes`;
-        const randomId = ids[Math.floor(Math.random() * ids.length)];
-
-        const payload = JSON.stringify({
-            contaId: randomId,
-            tipo: Math.random() < 0.5 ? 0 : 1,
-            valor: parseFloat((Math.random() * 1000).toFixed(2)),
-            dataLancamento: new Date().toISOString(),
-            descricao: `Transação de teste de carga - ${uuidv4()}`
-        });
+    group('Criação de Lançamento', () => { 
+        const lancamentoData = {
+            transactionId: 'YOUR_GUID_HERE', 
+            transactionDate: '2025-07-17T00:00:00', 
+            amount: 100,
+            type: 0 
+        };
+        const url = `${BASE_URL_LANCAMENTOS}/api/v1/lancamentos`; 
 
         const params = {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${''}` 
             },
-            tags: { scenario: 'insercao_lancamentos' },
+            tags: { scenario: 'cria_lancamento' },
         };
-
-        const res = http.post(url, payload, params);
+        
+        const res = http.post(url, JSON.stringify(lancamentoData), params);
 
         check(res, {
-            'Status 200/201': (r) => r.status === 200 || r.status === 201,
-            'Corpo da resposta não é vazio': (r) => r.body.length > 0,
+            'Status 200/201': (r) => r.status === 200 || r.status === 201, 
+            'Corpo da resposta não é vazio': (r) => r.body && r.body.length > 0,
             'Não é 401/403 (Sessão Válida)': (r) => r.status !== 401 && r.status !== 403,
         });
+        
+        lancamentosTrend.add(res.timings.duration); 
         
         sleep(1);
     });

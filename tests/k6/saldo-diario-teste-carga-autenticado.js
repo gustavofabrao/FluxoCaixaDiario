@@ -3,11 +3,12 @@ import { check, group, sleep, fail } from 'k6';
 import { SharedArray } from 'k6/data';
 import { Trend } from 'k6/metrics';
 
-const BASE_URL = 'http://localhost:4445';
-const BASE_URL_LOGIN = 'https://localhost:4435';
+const BASE_URL_SALDO_DIARIO = __ENV.BASE_URL_SALDO_DIARIO_API || 'https://localhost:4445';
+const IDENTITY_SERVER_URL = __ENV.IDENTITY_SERVER_URL || 'https://localhost:4435';
 
-const LOGIN_PAGE_URL = `${BASE_URL_LOGIN}/Account/Login`;
-const LOGIN_FORM_POST_URL = `${BASE_URL_LOGIN}/Account/Login`;
+// Use as variáveis do ambiente
+const LOGIN_PAGE_URL = `${IDENTITY_SERVER_URL}/Account/Login`;
+const LOGIN_FORM_POST_URL = `${IDENTITY_SERVER_URL}/Account/Login`;
 
 const TEST_USERNAME = __ENV.K6_USERNAME || 'opah-admin';
 const TEST_PASSWORD = __ENV.K6_PASSWORD || 'Admin123!';
@@ -28,7 +29,7 @@ const datasParaConsulta = new SharedArray('datas_para_consulta', function () {
 let isLoggedIn = false;
 
 export const options = {
-	insecureSkipTLSVerify: true,
+    insecureSkipTLSVerify: true,
     stages: [
         { duration: '30s', target: 20 },
         { duration: '5m', target: 50 },
@@ -54,14 +55,16 @@ function loginWithCookies() {
             tags: { scenario: 'login_flow' }
         });
 
-        check(res, {
-            'GET Login Page: Status 200': (r) => r.status === 200,
-            'GET Login Page: Contém formulário de login': (r) => r.body.includes('name="username"') && r.body.includes('name="password"')
-        });
+        check(res, { 'GET Login Page: Status 200': (r) => r.status === 200 });
 
         if (res.status !== 200) {
-            fail('Falha crítica ao carregar página de login.');
+            fail(`Falha crítica ao carregar página de login. Status: ${res.status}. Body: ${res.body}`);
         }
+
+        check(res, {
+            'GET Login Page: Contém formulário de login (username/password)': (r) => r.body.includes('name="username"') && r.body.includes('name="password"'),
+            'GET Login Page: Contém formulário de login (form action)': (r) => r.body.includes('<form action="/Account/Login" method="post">')
+        });
 
         const requestVerificationToken = res.html().find('input[name="__RequestVerificationToken"]').val();
         
@@ -98,25 +101,24 @@ function loginWithCookies() {
             isLoggedIn = true;
         } else {
             isLoggedIn = false;
-            fail('Falha crítica de login, não é possível prosseguir.');
+            fail(`Falha crítica de login, não é possível prosseguir. Status: ${res.status}. Body: ${res.body}`);
         }
     });
 }
 
 export default function () {
-    if (!isLoggedIn) { 
+    if (__VU == 0 && !isLoggedIn) { // __VU == 0 para garantir que o login inicial só ocorra uma vez por VUs
         loginWithCookies();
         sleep(2);
-    }
-
-    if (!isLoggedIn) {
+    } else if (!isLoggedIn) {
+        // Se não conseguiu logar na primeira tentativa tenta novamente 
         sleep(1);
-        return;
+        return; 
     }
     
     group('Consulta de Saldo Diário', () => {
         const dataAleatoria = datasParaConsulta[Math.floor(Math.random() * datasParaConsulta.length)];
-        const url = `${BASE_URL}/api/v1/saldo-diario/${dataAleatoria}`;
+        const url = `${BASE_URL_SALDO_DIARIO}/api/v1/saldo-diario/${dataAleatoria}`;
 
         const params = {
             tags: { scenario: 'consulta_saldo_diario' },
@@ -126,8 +128,15 @@ export default function () {
 
         check(res, {
             'Status 200': (r) => r.status === 200,
-            'Corpo da resposta não é vazio': (r) => r.body.length > 0,
-            'Contém saldo': (r) => JSON.parse(r.body).hasOwnProperty('balance'),
+            'Corpo da resposta não é vazio': (r) => r.body && r.body.length > 0, // Adicionado r.body para segurança
+            'Contém saldo': (r) => {
+                try {
+                    const jsonBody = JSON.parse(r.body);
+                    return jsonBody.hasOwnProperty('balance');
+                } catch (e) {
+                    return false; // Falha na parse do JSON
+                }
+            },
             'Não é 401/403 (Sessão Válida)': (r) => r.status !== 401 && r.status !== 403,
         });
         
