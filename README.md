@@ -234,3 +234,9 @@ docker run -d -p 6379:6379 --name some-redis redis
 * **CI/CD com Análise Estática:** Para produção, implementar um pipeline de Continuous Integration/Continuous Deployment (CI/CD) com integração a ferramentas de análise estática de código (ex: SonarQube) para garantir a qualidade contínua do código.
 * **Monitoramento e Dimensionamento de Filas (RabbitMQ):** Monitorar ativamente o tamanho das filas, a latência de processamento dos lotes e a saúde dos serviços para otimizar os parâmetros de `BatchIntervalMilliseconds` e `MaxBatchSize`. Ambos os serviços (Lançamentos e Consumidor) podem ser dimensionados horizontalmente adicionando mais instâncias, com o RabbitMQ distribuindo as mensagens para as instâncias disponíveis.
 *  **Ferramentas para controle maior para Observabilidade:**: Aprimorar a coleta e visualização de dados de telemetria utilizando OpenTelemetry para traces. Criar relatórios no Grafana que demonstram os logs, métricas e traces para uma visão gerencial do sistema.
+
+---
+
+## 🗺️ Fluxograma da Arquitetura
+
+![Fluxograma da Arquitetura do Sistema](fluxograma.png)
