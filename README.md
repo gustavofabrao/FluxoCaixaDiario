@@ -1,10 +1,10 @@
-# Projeto Fluxo de Caixa Diário
+# Projeto Fluxo de Caixa Diário 🚀
 
 Este projeto é uma **aplicação de exemplo para um sistema de Fluxo de Caixa Diário**, arquitetada com base em **microserviços**, desenvolvida seguindo as **melhores práticas**, **padrões de projeto** e com foco em **escalabilidade**, **resiliência**.
 
 ---
 
-## 🚀 Visão Geral da Arquitetura
+## 🏢 Visão Geral da Arquitetura
 
 O sistema foi construído com um conjunto de **microserviços independentes** que se comunicam de forma **assíncrona** para garantir **alta disponibilidade**, **tolerância a falhas** e garantir um maior **desacoplamento** entre as classes.
 
@@ -136,14 +136,16 @@ Com essa implementação, podemos ter uma comunicação entre microserviços rob
 ### Via Aplicação local (Visual Studio)
 
 1.  Abra o projeto através da solução FluxoCaixaDiario.sln
-2.  Configure múltiplos Startups com os projetos: FluxoCaixaDiario.IdentityServer, FluxoCaixaDiario.Lancamentos, FluxoCaixaDiario.SaldoDiario e FluxoCaixaDiario.Web. Também utilizando como configuração o primeiro perfil de execução web, para obter a primeira configuração(profile) do launchSettings.json
+2.  Configure múltiplos Startups com os projetos: *FluxoCaixaDiario.IdentityServer, FluxoCaixaDiario.Lancamentos, FluxoCaixaDiario.SaldoDiario e FluxoCaixaDiario.Web*. Também utilizando como configuração o primeiro perfil de execução web, para obter a primeira configuração(profile) do launchSettings.json
 3.  Dê o Start na aplicação e aguarde todas as APIs subirem no navegador.
-4.  Utilize para os testes no front a janela de endereço https://localhost:4430
+4.  Utilize para os testes no front a janela de endereço `https://localhost:4430`
 
 OBS: É necessário que o RabbitMQ e o Redis estejam rodando localmente via Docker em sua máquina nas portas respectivamente 15672 e 6379.
 Para garantir isso execute estes dois comandos via Terminal docker:
+```bash
 docker run -d --name rabbitmq -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 docker run -d -p 6379:6379 --name some-redis redis
+```
 
 ### Via Docker
 
@@ -186,16 +188,17 @@ docker run -d -p 6379:6379 --name some-redis redis
     ```
 
 ### Execução de Testes
+* **Pode ser executado via *Test Explorer* no VS (indicado por conseguimos ferramentas para verificação de cobertura de código e mais detalhes dos testes)**
 
 * **Execução de Todos os Testes Locais (Unitários e Integração):**
     ```bash
     dotnet test "FluxoCaixaDiario.sln" --logger "trx;LogFileName=test-results.trx;ResultsDirectory=./test_results/solucao_completa"
     ```
-* **Execução dos Testes Unitários da API de Lançamentos:**
+* **Execução dos Testes individualmente da API de Lançamentos:**
     ```bash
     dotnet test "./tests/FluxoCaixaDiario.Lancamentos.Tests/FluxoCaixaDiario.Lancamentos.Tests.csproj" --logger "trx;LogFileName=test-results.trx;ResultsDirectory=./test_results/lancamentos"
     ```
-* **Execução dos Testes Unitários da API de Saldo Diário:**
+* **Execução dos Testes individualmente da API de Saldo Diário:**
     ```bash
     dotnet test "./tests/FluxoCaixaDiario.SaldoDiario.Tests/FluxoCaixaDiario.SaldoDiario.Tests.csproj" --logger "trx;LogFileName=test-results.trx;ResultsDirectory=./test_results/saldodiario"
     ```
@@ -204,8 +207,9 @@ docker run -d -p 6379:6379 --name some-redis redis
     docker-compose logs lancamentos_tests # Se tiver um serviço para testes lancamentos_tests
     docker-compose logs saldodiario_tests # Se tiver um serviço para testes saldodiario_tests
     ```
+*PS: Para ambos acima, foi colocado o parâmetro `--logger "..."` para gerar relatório do resultado em um arquivo .trx*
 
-* **Execução dos Testes de Carga do k6 (separadamente):**
+* **Execução dos Testes de Carga do k6 via Docker (separadamente):**
     ```bash
     docker-compose run --rm k6 run ./tests/k6/lancamentos-teste-carga-autenticado.js
     docker-compose run --rm k6 run ./tests/k6/saldo-diario-teste-carga-autenticado.js
@@ -226,6 +230,7 @@ docker run -d -p 6379:6379 --name some-redis redis
 
 ## 🔮 Possíveis Evoluções e Melhorias Futuras
 
-* **Controle de Acesso Fino (IdentityServer):** A funcionalidade de controle de escopos por tipos de permissões pode ser expandida e integrada mais profundamente com as regras de negócio para um controle de acesso ainda mais granular, de acordo com o papel do usuário, e delimitando acessos a operações de leitura, escrita e exclusão.
-* **CI/CD com Análise Estática:** Implementar um pipeline de Continuous Integration/Continuous Deployment (CI/CD) com integração a ferramentas de análise estática de código (ex: SonarQube) para garantir a qualidade contínua do código.
+* **Controle de Acesso do usuário por Role (IdentityServer):** A funcionalidade está disponível no Identity Server, mas pode ser evoluida conforme necessidade na aplicação para controle de escopos por tipos de permissões pode ser expandida e integrada mais profundamente com as regras de negócio para um controle de acesso modular, de acordo com o papel do usuário, e delimitando acessos a operações de leitura, escrita e exclusão.
+* **CI/CD com Análise Estática:** Para produção, implementar um pipeline de Continuous Integration/Continuous Deployment (CI/CD) com integração a ferramentas de análise estática de código (ex: SonarQube) para garantir a qualidade contínua do código.
 * **Monitoramento e Dimensionamento de Filas (RabbitMQ):** Monitorar ativamente o tamanho das filas, a latência de processamento dos lotes e a saúde dos serviços para otimizar os parâmetros de `BatchIntervalMilliseconds` e `MaxBatchSize`. Ambos os serviços (Lançamentos e Consumidor) podem ser dimensionados horizontalmente adicionando mais instâncias, com o RabbitMQ distribuindo as mensagens para as instâncias disponíveis.
+*  **Ferramentas e controle maior para Observabilidade:**: Aprimorar a coleta e visualização de dados de telemetria utilizando OpenTelemetry para traces. Criar relatórios no Grafana que demonstram os logs, métricas e traces para uma visão gerencial do sistema.
