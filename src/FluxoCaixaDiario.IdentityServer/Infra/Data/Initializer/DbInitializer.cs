@@ -32,8 +32,8 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Data.Initializer
 
             ApplicationUser admin = new ApplicationUser()
             {
-                UserName = "opah-admin",
-                Email = "opah-admin@opah.com.br",
+                UserName = "gustavo-admin",
+                Email = "gustavo-admin@teste.com.br",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
                 TwoFactorEnabled = false,
@@ -41,7 +41,7 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Data.Initializer
                 AccessFailedCount = 0,
                 PhoneNumber = "+55 (16) 99999-9999",
                 FirstName = "Admin",
-                LastName = "Opah"
+                LastName = "Gustavo"
             };
 
             _user.CreateAsync(admin, "Admin123!").GetAwaiter().GetResult(); // Necessita de senha segura (Maiusculas, minusculas e carac. Especiais)
@@ -57,16 +57,16 @@ namespace FluxoCaixaDiario.IdentityServer.Infra.Data.Initializer
 
             ApplicationUser client = new ApplicationUser()
             {
-                UserName = "opah-client",
-                Email = "opah-client@opah.com.br",
+                UserName = "gustavo-client",
+                Email = "gustavo-client@teste.com.br",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true,
                 TwoFactorEnabled = false,
                 LockoutEnabled = false,
                 AccessFailedCount = 0,
                 PhoneNumber = "+55 (16) 99999-9999",
-                FirstName = "Opah",
-                LastName = "Client"
+                FirstName = "Client",
+                LastName = "Gustavo"
             };
 
             _user.CreateAsync(client, "Admin123!").GetAwaiter().GetResult(); // Necessita de senha segura (Maiusculas, minusculas e carac. Especiais)
