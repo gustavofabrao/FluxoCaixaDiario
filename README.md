@@ -62,6 +62,8 @@ O projeto utiliza **IdentityServer** com protocolo **OpenID Connect (OIDC)**, im
 *Informação importante: O Identity Server não armazena no cliente, ele devolve um cookie autenticado em que as APIS internamente via código realizam a decodificação do mesmo para chamadas autenticadas posteriores. Para conseguir o token você deve interceptar via debugger na aplicação o trecho abaixo, ou até mesmo posteriormente obter nas comunicações posteriores das APIS via Header Authorization.
 var token = await HttpContext.GetTokenAsync("access_token")* 
 
+Obs: Usuários de testes iniciais para testes no arquivo DbInitializer.cs
+
 ---
 
 ## 📈 Resiliência e Desempenho
