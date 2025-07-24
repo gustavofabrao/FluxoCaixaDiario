@@ -4,6 +4,12 @@ Este projeto é uma **aplicação de exemplo para um sistema de Fluxo de Caixa D
 
 ---
 
+## 🗺️ Fluxograma da Arquitetura
+
+![Fluxograma da Arquitetura do Sistema](fluxograma.png)
+
+---
+
 ## 🏢 Visão Geral da Arquitetura
 
 O sistema foi construído com um conjunto de **microserviços independentes** que se comunicam de forma **assíncrona** para garantir **alta disponibilidade**, **tolerância a falhas** e garantir um maior **desacoplamento** entre as classes.
@@ -55,6 +61,8 @@ O projeto utiliza **IdentityServer** com protocolo **OpenID Connect (OIDC)**, im
 
 *Informação importante: O Identity Server não armazena no cliente, ele devolve um cookie autenticado em que as APIS internamente via código realizam a decodificação do mesmo para chamadas autenticadas posteriores. Para conseguir o token você deve interceptar via debugger na aplicação o trecho abaixo, ou até mesmo posteriormente obter nas comunicações posteriores das APIS via Header Authorization.
 var token = await HttpContext.GetTokenAsync("access_token")* 
+
+Obs: Usuários iniciais para testes no arquivo DbInitializer.cs
 
 ---
 
@@ -234,9 +242,3 @@ docker run -d -p 6379:6379 --name some-redis redis
 * **CI/CD com Análise Estática:** Para produção, implementar um pipeline de Continuous Integration/Continuous Deployment (CI/CD) com integração a ferramentas de análise estática de código (ex: SonarQube) para garantir a qualidade contínua do código.
 * **Monitoramento e Dimensionamento de Filas (RabbitMQ):** Monitorar ativamente o tamanho das filas, a latência de processamento dos lotes e a saúde dos serviços para otimizar os parâmetros de `BatchIntervalMilliseconds` e `MaxBatchSize`. Ambos os serviços (Lançamentos e Consumidor) podem ser dimensionados horizontalmente adicionando mais instâncias, com o RabbitMQ distribuindo as mensagens para as instâncias disponíveis.
 *  **Ferramentas para controle maior para Observabilidade:**: Aprimorar a coleta e visualização de dados de telemetria utilizando OpenTelemetry para traces. Criar relatórios no Grafana que demonstram os logs, métricas e traces para uma visão gerencial do sistema.
-
----
-
-## 🗺️ Fluxograma da Arquitetura
-
-![Fluxograma da Arquitetura do Sistema](fluxograma.png)
