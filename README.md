@@ -17,7 +17,8 @@ O sistema foi construído com um conjunto de **microserviços independentes** qu
 ### Decisões Chave
 
 * **Microserviços:** Separação das responsabilidades em serviços distintos (Lançamentos, Saldo Diário, Identity).
-* **Comunicação Assíncrona:** Utilização de um **Message Broker (RabbitMQ)** para o **desacoplamento** e **resiliência** entre o serviço de Lançamentos e o de Consolidação Diária.
+* **Domain-Driven Design (DDD):** Desenvolvimento alinhado com as necessidades com base no domínio do negócio.
+* **Comunicação Assíncrona + Event-Driven Design (EDD):** Utilização de um **Message Broker (RabbitMQ)** para o **desacoplamento** e **resiliência** entre o serviço de Lançamentos e o de Consolidação Diária.
 * **Buffer de Mensagens com Redis:** O serviço de Lançamentos utiliza o **Redis** como um **buffer temporário e seguro** para agrupar transações e enviá-las em lote para o RabbitMQ. Isso otimiza o rendimento  e reduz a carga no broker em picos de requisições de lançamentos.
 * **Contêinerização:** Utilização de **Docker** e **Docker Compose** para **isolamento**, **portabilidade** e **orquestração** dos serviços.
 
