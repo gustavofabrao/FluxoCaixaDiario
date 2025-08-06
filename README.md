@@ -59,8 +59,9 @@ O projeto utiliza **IdentityServer** com protocolo **OpenID Connect (OIDC)**, im
 
  Embora não utilizado neste protótipo de sistema, o IdentityServer está preparado para controlar **escopos por tipos de permissões**, de acordo com o papel do usuário(roles), e delimitar acessos a operações de leitura, escrita e exclusão.
 
-*Informação importante: O Identity Server não armazena no cliente, ele devolve um cookie autenticado em que as APIS internamente via código realizam a decodificação do mesmo para chamadas autenticadas posteriores. Para conseguir o token você deve interceptar via debugger na aplicação o trecho abaixo, ou até mesmo posteriormente obter nas comunicações posteriores das APIS via Header Authorization.
-var token = await HttpContext.GetTokenAsync("access_token")* 
+*Informação importante: O Identity Server não armazena o token no cliente, ele devolve um cookie autenticado em que as APIS internamente via código realizam a decodificação do mesmo para chamadas autenticadas posteriores. Para conseguir o token você deve interceptar via debugger na aplicação o trecho abaixo, ou até mesmo posteriormente obter nas comunicações posteriores das APIS via Header Authorization.*
+
+*var token = await HttpContext.GetTokenAsync("access_token")* 
 
 Obs: Usuários iniciais para testes no arquivo DbInitializer.cs
 
