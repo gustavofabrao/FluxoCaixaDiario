@@ -212,11 +212,6 @@ docker run -d -p 6379:6379 --name some-redis redis
     ```bash
     dotnet test "./tests/FluxoCaixaDiario.SaldoDiario.Tests/FluxoCaixaDiario.SaldoDiario.Tests.csproj" --logger "trx;LogFileName=test-results.trx;ResultsDirectory=./test_results/saldodiario"
     ```
-    *Para verificar os logs dos testes (útil para depuração de testes em contêineres):*
-    ```bash
-    docker-compose logs lancamentos_tests # Se tiver um serviço para testes lancamentos_tests
-    docker-compose logs saldodiario_tests # Se tiver um serviço para testes saldodiario_tests
-    ```
 *PS: Para ambos acima, foi colocado o parâmetro `--logger "..."` para gerar relatório do resultado em um arquivo .trx*
 
 * **Execução dos Testes de Carga do k6 via Docker (separadamente):**
